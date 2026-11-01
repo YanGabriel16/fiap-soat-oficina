@@ -395,3 +395,29 @@ public class ClienteRepository : IClienteRepository
 | `Oficina.Domain` | Entities, Enums, Dtos, Interfaces | Sem dependências externas |
 | `Oficina.Infra.Data` | DbContext, Mappings, Repositories | 1 mapping e 1 repository por entidade |
 | `Oficina.Infra.Data.Postgres` | Migrations | Somente migrations |
+
+## 6. Testes automatizados
+
+O projeto possui uma camada de testes unitários em `tests/Oficina.Application.Tests`, utilizando NUnit e Moq.
+
+Todo endpoint da aplicação deve possuir testes unitários para o caminho de sucesso e para os cenários de falha relevantes, como recurso não encontrado, credenciais inválidas e conflitos de negócio. Os testes de controller são organizados em um arquivo por controller e validam o resultado HTTP da action, utilizando mocks das services para manter o isolamento da camada de apresentação. As regras de negócio das services, como cadastro duplicado e autenticação, também devem ser testadas diretamente.
+
+```
+tests/Oficina.Application.Tests/
+└── Controllers/
+    ├── AuthControllerTests.cs
+    ├── ClienteControllerTests.cs
+    ├── ItemCatalogoControllerTests.cs
+    ├── OrdemServicoControllerTests.cs
+    └── VeiculoControllerTests.cs
+```
+
+Além dos testes dos Controllers, somente deverão ser criados testes específicos para Services e Repositories quando a cobertura dos testes dos Controllers não for suficiente para garantir o comportamento esperado, ou quando houver métodos auxiliares compartilhados e utilizados em diferentes partes da aplicação.
+
+Evitando duplicar testes que já validam o mesmo comportamento por meio dos Controllers. Priorizando testes que agreguem cobertura e valor real à aplicação.
+
+Para executar os testes:
+
+```bash
+dotnet test tests/Oficina.Application.Tests/Oficina.Application.Tests.csproj
+```
