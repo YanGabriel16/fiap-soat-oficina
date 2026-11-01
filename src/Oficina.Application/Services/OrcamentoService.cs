@@ -1,0 +1,32 @@
+using Oficina.Domain.Common;
+using Oficina.Domain.Dtos;
+using Oficina.Domain.Entities;
+using Oficina.Domain.Enums;
+using Oficina.Domain.Interfaces.Repositories;
+using Oficina.Domain.Interfaces.Services;
+
+namespace Oficina.Application.Services;
+
+public sealed class OrcamentoService(IOrcamentoRepository repository, IOrdemServicoRepository ordemRepository, IClienteRepository clienteRepository, Oficina.Infra.Data.Context.OficinaDbContext db) : IOrcamentoService
+{
+    public async Task<OrcamentoDto?> ObterPorOrdemAsync(Guid ordemServicoId, Guid? usuarioId, bool cliente, CancellationToken ct)
+    {
+        var orcamento = await repository.ObterPorOrdemAsync(ordemServicoId, ct);
+        if (orcamento is null) return null;
+        if (cliente && (!usuarioId.HasValue || (await clienteRepository.ObterPorUsuarioAsync(usuarioId.Value, ct))?.Id != orcamento.ClienteId)) throw new ConflitoException("O cliente não pode acessar este orçamento.");
+        return Map(orcamento);
+    }
+    public async Task DecidirAsync(Guid ordemServicoId, Guid usuarioId, StatusOrcamento decisao, CancellationToken ct)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
+        var cliente = await clienteRepository.ObterPorUsuarioAsync(usuarioId, ct) ?? throw new ConflitoException("Usuário não possui cadastro de cliente.");
+        var orcamento = await repository.ObterPorOrdemAsync(ordemServicoId, ct) ?? throw new KeyNotFoundException("Orçamento não encontrado.");
+        if (orcamento.ClienteId != cliente.Id) throw new ConflitoException("O orçamento não pertence ao cliente autenticado.");
+        orcamento.Decidir(decisao); var ordem = await ordemRepository.ObterPorIdAsync(ordemServicoId, ct) ?? throw new KeyNotFoundException("Ordem não encontrada.");
+        var novoStatus = decisao == StatusOrcamento.Aprovado ? StatusOrdemServico.EmExecucao : StatusOrdemServico.Recebida;
+        if (ordem.Status == StatusOrdemServico.AguardandoAprovacao) ordem.AlterarStatus(novoStatus);
+        db.HistoricosOrdensServico.Add(new HistoricoOrdemServico(ordem.Id, StatusOrdemServico.AguardandoAprovacao, novoStatus, $"Orçamento {decisao}.", usuarioId, TipoHistoricoOrdem.Orcamento));
+        await db.SaveChangesAsync(ct); await transaction.CommitAsync(ct);
+    }
+    private static OrcamentoDto Map(Orcamento x) => new(x.Id, x.OrdemServicoId, x.ClienteId, x.ValorMaoDeObra, x.ValorTotal, x.Status, x.DataCriacao, x.DataDecisao, x.Itens.Select(i => new OrcamentoItemDto(i.ItemCatalogoId, i.ItemCatalogo?.Nome ?? string.Empty, i.Quantidade, i.ValorUnitario, i.ValorTotal)).ToList());
+}

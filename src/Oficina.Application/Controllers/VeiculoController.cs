@@ -5,6 +5,7 @@ using Oficina.Domain.Interfaces.Services;
 namespace Oficina.Application.Controllers;
 
 [ApiController, Route("api/veiculos")]
+[Authorize(Roles = "Admin,Atendente")]
 public sealed class VeiculoController(IVeiculoService service) : ApiControllerBase
 {
     [HttpGet]

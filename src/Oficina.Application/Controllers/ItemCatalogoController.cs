@@ -5,6 +5,7 @@ using Oficina.Domain.Interfaces.Services;
 namespace Oficina.Application.Controllers;
 
 [ApiController, Route("api/itens-catalogo")]
+[Authorize(Roles = "Admin,Atendente")]
 public sealed class ItemCatalogoController(IItemCatalogoService service) : ApiControllerBase
 {
     [HttpGet]

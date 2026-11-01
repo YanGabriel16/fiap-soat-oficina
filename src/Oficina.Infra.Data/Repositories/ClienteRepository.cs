@@ -4,6 +4,7 @@ using Oficina.Infra.Data.Context;
 namespace Oficina.Infra.Data.Repositories;
 public sealed class ClienteRepository(OficinaDbContext db) : BaseRepository<Cliente>(db), IClienteRepository
 {
+    public Task<Cliente?> ObterPorUsuarioAsync(Guid usuarioId, CancellationToken ct) => Db.Clientes.SingleOrDefaultAsync(x => x.UsuarioId == usuarioId, ct);
     protected override IQueryable<Cliente> AplicarFiltro(IQueryable<Cliente> query, string? term) 
         => query.Where(x => string.IsNullOrEmpty(term) || x.Nome.ToLower().Contains(term!.ToLower()) || x.Documento.Contains(term!));
     protected override IQueryable<Cliente> AplicarOrdenacao(IQueryable<Cliente> query) 

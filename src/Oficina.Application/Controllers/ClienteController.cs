@@ -5,6 +5,7 @@ using Oficina.Domain.Interfaces.Services;
 namespace Oficina.Application.Controllers;
 
 [ApiController, Route("api/clientes")]
+[Authorize(Roles = "Admin,Atendente")]
 public sealed class ClienteController(IClienteService service) : ApiControllerBase
 {
     [HttpGet]
@@ -25,7 +26,9 @@ public sealed class ClienteController(IClienteService service) : ApiControllerBa
 
     [HttpPost]
     public Task<IActionResult> Criar([FromBody] CriarClienteRequest request, CancellationToken ct) =>
-        ExecutarAsync(async () => Ok(await service.CriarAsync(request.Nome, request.Documento, ct)));
+        ExecutarAsync(async () => Ok(request.UsuarioId.HasValue
+            ? await service.CriarAsync(request.Nome, request.Documento, request.UsuarioId.Value, ct)
+            : await service.CriarAsync(request.Nome, request.Documento, ct)));
 
     [HttpPut("{id:guid}")]
     public Task<IActionResult> Atualizar(

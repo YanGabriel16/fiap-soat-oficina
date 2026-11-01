@@ -47,12 +47,61 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                         .HasMaxLength(160)
                         .HasColumnType("character varying(160)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Documento")
                         .IsUnique();
 
+                    b.HasIndex("UsuarioId")
+                        .IsUnique();
+
                     b.ToTable("clientes", "clientes");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.HistoricoOrdemServico", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DataUltimaModificacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("NovoStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid>("OrdemServicoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("StatusAnterior")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrdemServicoId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("historico_ordens_servico", "oficina");
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.ItemCatalogo", b =>
@@ -90,10 +139,91 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.ToTable("itens_catalogo", "oficina");
                 });
 
+            modelBuilder.Entity("Oficina.Domain.Entities.Orcamento", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClienteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataDecisao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DataUltimaModificacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OrdemServicoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ValorMaoDeObra")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("OrdemServicoId")
+                        .IsUnique();
+
+                    b.ToTable("orcamentos", "oficina");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.OrcamentoItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DataUltimaModificacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ItemCatalogoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrcamentoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemCatalogoId");
+
+                    b.HasIndex("OrcamentoId");
+
+                    b.ToTable("orcamentos_itens", "oficina");
+                });
+
             modelBuilder.Entity("Oficina.Domain.Entities.OrdemServico", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AtendenteId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ClienteId")
@@ -108,8 +238,17 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.Property<DateTimeOffset>("DataUltimaModificacao")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("ValorMaoDeObra")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal>("ValorTotal")
                         .HasPrecision(18, 2)
@@ -120,9 +259,48 @@ namespace Oficina.Infra.Data.Postgres.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AtendenteId");
+
                     b.HasIndex("ClienteId", "VeiculoId");
 
                     b.ToTable("ordens_servico", "oficina");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.OrdemServicoItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DataUltimaModificacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ItemCatalogoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrdemServicoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemCatalogoId");
+
+                    b.HasIndex("OrdemServicoId");
+
+                    b.ToTable("ordens_servico_itens", "oficina");
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.Token", b =>
@@ -189,6 +367,9 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                         .HasMaxLength(160)
                         .HasColumnType("character varying(160)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SenhaHash")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -248,6 +429,108 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.ToTable("veiculos", "clientes");
                 });
 
+            modelBuilder.Entity("Oficina.Domain.Entities.Cliente", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.Usuario", "Usuario")
+                        .WithOne("Cliente")
+                        .HasForeignKey("Oficina.Domain.Entities.Cliente", "UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.HistoricoOrdemServico", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.OrdemServico", "OrdemServico")
+                        .WithMany("Historico")
+                        .HasForeignKey("OrdemServicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Oficina.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OrdemServico");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.Orcamento", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Oficina.Domain.Entities.OrdemServico", "OrdemServico")
+                        .WithOne("Orcamento")
+                        .HasForeignKey("Oficina.Domain.Entities.Orcamento", "OrdemServicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("OrdemServico");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.OrcamentoItem", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.ItemCatalogo", "ItemCatalogo")
+                        .WithMany()
+                        .HasForeignKey("ItemCatalogoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Oficina.Domain.Entities.Orcamento", null)
+                        .WithMany("Itens")
+                        .HasForeignKey("OrcamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemCatalogo");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.OrdemServico", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.Usuario", "Atendente")
+                        .WithMany()
+                        .HasForeignKey("AtendenteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Oficina.Domain.Entities.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Atendente");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.OrdemServicoItem", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.ItemCatalogo", "ItemCatalogo")
+                        .WithMany()
+                        .HasForeignKey("ItemCatalogoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Oficina.Domain.Entities.OrdemServico", null)
+                        .WithMany("Itens")
+                        .HasForeignKey("OrdemServicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemCatalogo");
+                });
+
             modelBuilder.Entity("Oficina.Domain.Entities.Token", b =>
                 {
                     b.HasOne("Oficina.Domain.Entities.Usuario", null)
@@ -271,6 +554,25 @@ namespace Oficina.Infra.Data.Postgres.Migrations
             modelBuilder.Entity("Oficina.Domain.Entities.Cliente", b =>
                 {
                     b.Navigation("Veiculos");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.Orcamento", b =>
+                {
+                    b.Navigation("Itens");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.OrdemServico", b =>
+                {
+                    b.Navigation("Historico");
+
+                    b.Navigation("Itens");
+
+                    b.Navigation("Orcamento");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.Usuario", b =>
+                {
+                    b.Navigation("Cliente");
                 });
 #pragma warning restore 612, 618
         }

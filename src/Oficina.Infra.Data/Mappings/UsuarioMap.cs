@@ -11,6 +11,7 @@ public sealed class UsuarioMap : EntidadeBaseMap<Usuario>
         builder.Property(x => x.Nome).HasMaxLength(160).IsRequired();
         builder.Property(x => x.Email).HasMaxLength(320).IsRequired();
         builder.Property(x => x.SenhaHash).HasMaxLength(512).IsRequired();
+        builder.Property(x => x.Role).HasConversion<int>().IsRequired();
         builder.HasIndex(x => x.Email).IsUnique();
     }
 }

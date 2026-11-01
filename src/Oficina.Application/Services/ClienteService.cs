@@ -9,10 +9,13 @@ public sealed class ClienteService(IClienteRepository repository) : BaseService<
 {
     public async Task<Guid> CriarAsync(string nome, string documento, CancellationToken ct)
     {
+        throw new ArgumentException("UsuarioId é obrigatório para cadastrar um cliente.");
+    }
+    public async Task<Guid> CriarAsync(string nome, string documento, Guid usuarioId, CancellationToken ct)
+    {
         ValidarDocumento(documento);
-        var e = new Cliente(nome, documento);
-        await Repository.AdicionarAsync(e, ct);
-        return e.Id;
+        if (usuarioId == Guid.Empty) throw new ArgumentException("UsuarioId é obrigatório para cadastrar um cliente.");
+        var e = new Cliente(nome, documento, usuarioId); await Repository.AdicionarAsync(e, ct); return e.Id;
     }
     public async Task<Guid> AtualizarAsync(Guid id, string nome, string documento, CancellationToken ct)
     {

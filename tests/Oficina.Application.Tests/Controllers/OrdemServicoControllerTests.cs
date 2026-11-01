@@ -63,4 +63,34 @@ public sealed class OrdemServicoControllerTests
         service.Setup(x => x.ExcluirAsync(Id, It.IsAny<CancellationToken>())).ReturnsAsync(false);
         Assert.That(await new OrdemServicoController(service.Object).Excluir(Id, CancellationToken.None), Is.TypeOf<NotFoundResult>());
     }
+
+    [Test]
+    public async Task Minhas_DeveConsultarSomenteClienteAutenticado()
+    {
+        var service = new Mock<IOrdemServicoService>();
+        service.Setup(x => x.ListarDoClienteAsync(It.IsAny<Guid>(), 0, 20, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ResultadoPaginadoDto<OrdemServicoDto>([Ordem], 0, 20, 1));
+        var controller = new OrdemServicoController(service.Object) { ControllerContext = ContextoAutenticado() };
+
+        Assert.That(await controller.Minhas(0, 20, CancellationToken.None), Is.TypeOf<OkObjectResult>());
+        service.Verify(x => x.ListarDoClienteAsync(It.IsAny<Guid>(), 0, 20, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public async Task AtualizarStatus_DeveRetornarNoContent()
+    {
+        var service = new Mock<IOrdemServicoService>();
+        var controller = new OrdemServicoController(service.Object) { ControllerContext = ContextoAutenticado() };
+
+        Assert.That(await controller.AtualizarStatus(Id, new AtualizarStatusOrdemRequest(StatusOrdemServico.EmDiagnostico, "Diagnóstico iniciado"), CancellationToken.None), Is.TypeOf<NoContentResult>());
+        service.Verify(x => x.AtualizarStatusAsync(Id, StatusOrdemServico.EmDiagnostico, It.IsAny<Guid>(), "Diagnóstico iniciado", It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    private static ControllerContext ContextoAutenticado()
+    {
+        var identidade = new System.Security.Claims.ClaimsIdentity([
+            new System.Security.Claims.Claim("sub", Guid.NewGuid().ToString()),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "Cliente")], "test");
+        return new ControllerContext { HttpContext = new DefaultHttpContext { User = new System.Security.Claims.ClaimsPrincipal(identidade) } };
+    }
 }

@@ -10,5 +10,7 @@ public sealed class ClienteMap : EntidadeBaseMap<Cliente>
         b.Property(x => x.Nome).HasMaxLength(160).IsRequired();
         b.Property(x => x.Documento).HasMaxLength(18).IsRequired();
         b.HasIndex(x => x.Documento).IsUnique();
+        b.HasIndex(x => x.UsuarioId).IsUnique();
+        b.HasOne(x => x.Usuario).WithOne(x => x.Cliente).HasForeignKey<Cliente>(x => x.UsuarioId).OnDelete(DeleteBehavior.Restrict).IsRequired();
     }
 }
