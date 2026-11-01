@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: oficina-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: oficina
+      POSTGRES_USER: oficina
+      POSTGRES_PASSWORD: oficina_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - oficina-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oficina -d oficina"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  oficina-postgres-data:
