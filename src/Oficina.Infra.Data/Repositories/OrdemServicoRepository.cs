@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Oficina.Domain.Entities;
 using Oficina.Domain.Interfaces.Repositories;
 using Oficina.Infra.Data.Context;

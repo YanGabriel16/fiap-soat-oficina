@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Oficina.Application.Requests.OrdemServico;
 using Oficina.Domain.Dtos;
 using Oficina.Domain.Interfaces.Services;

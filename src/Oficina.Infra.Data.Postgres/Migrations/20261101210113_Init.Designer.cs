@@ -12,15 +12,15 @@ using Oficina.Infra.Data.Context;
 namespace Oficina.Infra.Data.Postgres.Migrations
 {
     [DbContext(typeof(OficinaDbContext))]
-    [Migration("20261101192741_Inicial")]
-    partial class Inicial
+    [Migration("20261101210113_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -55,7 +55,7 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.HasIndex("Documento")
                         .IsUnique();
 
-                    b.ToTable("clientes", (string)null);
+                    b.ToTable("clientes", "clientes");
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.ItemCatalogo", b =>
@@ -90,7 +90,7 @@ namespace Oficina.Infra.Data.Postgres.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("itens_catalogo", (string)null);
+                    b.ToTable("itens_catalogo", "oficina");
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.OrdemServico", b =>
@@ -125,7 +125,45 @@ namespace Oficina.Infra.Data.Postgres.Migrations
 
                     b.HasIndex("ClienteId", "VeiculoId");
 
-                    b.ToTable("ordens_servico", (string)null);
+                    b.ToTable("ordens_servico", "oficina");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.Usuario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DataUltimaModificacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)");
+
+                    b.Property<string>("SenhaHash")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("usuarios", "auth");
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.Veiculo", b =>
@@ -171,7 +209,7 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.HasIndex("Placa")
                         .IsUnique();
 
-                    b.ToTable("veiculos", (string)null);
+                    b.ToTable("veiculos", "clientes");
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.Veiculo", b =>

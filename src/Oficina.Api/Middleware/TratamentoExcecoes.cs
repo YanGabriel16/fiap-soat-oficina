@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+using Oficina.Domain.Common;
 
 namespace Oficina.Api.Middleware;
 
@@ -11,7 +10,7 @@ public sealed class TratamentoExcecoes(ILogger<TratamentoExcecoes> logger) : IEx
         {
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Recurso não encontrado."),
             ArgumentException => (StatusCodes.Status400BadRequest, "Dados inválidos."),
-            InvalidOperationException => (StatusCodes.Status409Conflict, "Operação não permitida."),
+            ConflitoException => (StatusCodes.Status409Conflict, "Operação não permitida."),
             _ => (0, string.Empty)
         };
         if (status == 0) return false;

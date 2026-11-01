@@ -1,11 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.14" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\Oficina.Domain\Oficina.Domain.csproj" />
+    <ProjectReference Include="..\Oficina.Infra.Data\Oficina.Infra.Data.csproj" />
+    <ProjectReference Include="..\Oficina.Infra.Data.Postgres\Oficina.Infra.Data.Postgres.csproj" />
   </ItemGroup>
 </Project>

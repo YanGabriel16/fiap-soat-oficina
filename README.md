@@ -43,20 +43,22 @@ O `POST` e o `PUT` retornam o `Guid` do registro. O `DELETE` grava `DataExclusao
 
 ## Executar
 
-Pré-requisitos: .NET SDK 8 e Docker Desktop.
+Pré-requisitos: .NET SDK 10 e Docker Desktop.
 
 ```bash
 docker compose up -d postgres
 dotnet restore
-dotnet ef database update --context Oficina.Infra.Data.Context.OficinaDbContext --project src/Oficina.Infra.Data.Postgres --startup-project src/Oficina.Api
 dotnet run --project src/Oficina.Api
 ```
+
+As migrations pendentes são aplicadas automaticamente durante a inicialização da API.
+O comando `dotnet ef database update` só é necessário para atualizar o banco manualmente.
 
 Swagger: `http://localhost:5080/swagger`.
 
 PostgreSQL está definido em [docker-compose.yml](./docker-compose.yml), usando `postgres:16-alpine`, volume persistente e healthcheck.
 
-Para gerar uma migration:
+Para gerar uma migration (a migration inicial deste projeto é `Init`):
 
 ```bash
 dotnet ef migrations add NomeDaMigration --context Oficina.Infra.Data.Context.OficinaDbContext --project src/Oficina.Infra.Data.Postgres --startup-project src/Oficina.Api --output-dir Migrations
