@@ -7,5 +7,6 @@ public sealed class OficinaDbContext(DbContextOptions<OficinaDbContext> options)
     public DbSet<ItemCatalogo> ItensCatalogo => Set<ItemCatalogo>();
     public DbSet<OrdemServico> OrdensServico => Set<OrdemServico>();
     public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Token> Tokens => Set<Token>();
     protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyConfigurationsFromAssembly(typeof(OficinaDbContext).Assembly);
 }

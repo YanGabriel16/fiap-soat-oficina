@@ -25,6 +25,7 @@ public static class ServiceConfiguration
         services.AddScoped<IItemCatalogoRepository, ItemCatalogoRepository>();
         services.AddScoped<IOrdemServicoRepository, OrdemServicoRepository>();
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<ITokenRepository, TokenRepository>();
         #endregion
         
         return services;

@@ -3,14 +3,16 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Oficina.Domain.Entities;
+using Oficina.Domain.Interfaces.Repositories;
 using Oficina.Domain.Interfaces.Services;
 
 namespace Oficina.Application.Services;
 
-public sealed class TokenService(IConfiguration configuration) : ITokenService
+public sealed class TokenService(IConfiguration configuration, ITokenRepository repository) : ITokenService
 {
-    public string Gerar(Usuario usuario)
+    public async Task<string> GerarAsync(Usuario usuario, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
         var key = configuration["Jwt:Key"]
             ?? throw new InvalidOperationException("Jwt:Key não configurada.");
 
@@ -23,11 +25,14 @@ public sealed class TokenService(IConfiguration configuration) : ITokenService
 
         var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key));
         var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+        var expiracao = DateTimeOffset.UtcNow.AddHours(1);
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: expiracao.UtcDateTime,
             signingCredentials: credentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var valor = new JwtSecurityTokenHandler().WriteToken(token);
+        await repository.AdicionarAsync(new Token(usuario.Id, valor, expiracao), ct);
+        return valor;
     }
 }

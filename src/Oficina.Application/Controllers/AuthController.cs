@@ -5,20 +5,23 @@ using Oficina.Domain.Interfaces.Services;
 
 namespace Oficina.Application.Controllers;
 
+[AllowAnonymous]
 [ApiController, Route("api/auth")]
-public sealed class AuthController(IAuthService service) : ControllerBase
+public sealed class AuthController(IAuthService service) : ApiControllerBase
 {
-    [AllowAnonymous, HttpPost("usuarios")]
-    public async Task<ActionResult<Guid>> Cadastrar([FromBody] CadastrarUsuarioRequest request, CancellationToken ct)
-    {
-        var id = await service.CadastrarAsync(request.Nome, request.Email, request.Senha, ct);
-        return StatusCode(StatusCodes.Status201Created, id);
-    }
+    [HttpPost("usuarios")]
+    public Task<IActionResult> Cadastrar([FromBody] CadastrarUsuarioRequest request, CancellationToken ct) =>
+        ExecutarAsync(async () =>
+        {
+            var id = await service.CadastrarAsync(request.Nome, request.Email, request.Senha, ct);
+            return StatusCode(StatusCodes.Status201Created, id);
+        });
 
-    [AllowAnonymous, HttpPost("login")]
-    public async Task<ActionResult<LoginDto>> Login([FromBody] LoginRequest request, CancellationToken ct)
-    {
-        var resultado = await service.LoginAsync(request.Email, request.Senha, ct);
-        return resultado is null ? Unauthorized() : Ok(resultado);
-    }
+    [HttpPost("login")]
+    public Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct) =>
+        ExecutarAsync(async () =>
+        {
+            var resultado = await service.LoginAsync(request.Email, request.Senha, ct);
+            return resultado is null ? Unauthorized() : Ok(resultado);
+        });
 }

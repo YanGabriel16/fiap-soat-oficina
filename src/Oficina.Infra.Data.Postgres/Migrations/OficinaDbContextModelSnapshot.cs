@@ -17,7 +17,7 @@ namespace Oficina.Infra.Data.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -125,6 +125,45 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.ToTable("ordens_servico", "oficina");
                 });
 
+            modelBuilder.Entity("Oficina.Domain.Entities.Token", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DataUltimaModificacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiraEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Revogado")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.HasIndex("Valor")
+                        .IsUnique();
+
+                    b.ToTable("token", "auth");
+                });
+
             modelBuilder.Entity("Oficina.Domain.Entities.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
@@ -207,6 +246,15 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                         .IsUnique();
 
                     b.ToTable("veiculos", "clientes");
+                });
+
+            modelBuilder.Entity("Oficina.Domain.Entities.Token", b =>
+                {
+                    b.HasOne("Oficina.Domain.Entities.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Oficina.Domain.Entities.Veiculo", b =>

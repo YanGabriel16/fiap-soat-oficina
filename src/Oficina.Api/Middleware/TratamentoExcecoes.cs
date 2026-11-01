@@ -1,4 +1,5 @@
 using Oficina.Domain.Common;
+using Oficina.Domain.Dtos;
 
 namespace Oficina.Api.Middleware;
 
@@ -6,17 +7,16 @@ public sealed class TratamentoExcecoes(ILogger<TratamentoExcecoes> logger) : IEx
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
     {
-        var (status, titulo) = exception switch
+        var (status, mensagem) = exception switch
         {
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Recurso não encontrado."),
             ArgumentException => (StatusCodes.Status400BadRequest, "Dados inválidos."),
             ConflitoException => (StatusCodes.Status409Conflict, "Operação não permitida."),
-            _ => (0, string.Empty)
+            _ => (StatusCodes.Status500InternalServerError, "Ocorreu um erro interno.")
         };
-        if (status == 0) return false;
-        logger.LogWarning(exception, "Exceção de negócio tratada: {Titulo}", titulo);
+        logger.LogError(exception, "Erro tratado pela API: {Mensagem}", mensagem);
         context.Response.StatusCode = status;
-        await context.Response.WriteAsJsonAsync(new ProblemDetails { Status = status, Title = titulo, Detail = titulo, Instance = context.Request.Path }, ct);
+        await context.Response.WriteAsJsonAsync(new ErroResponse(status, mensagem, context.Request.Path), ct);
         return true;
     }
 }

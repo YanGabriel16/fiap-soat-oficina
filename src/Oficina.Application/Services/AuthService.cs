@@ -35,6 +35,6 @@ public sealed class AuthService(
         if (resultado == PasswordVerificationResult.Failed)
             return null;
 
-        return new LoginDto(tokenService.Gerar(usuario), DateTimeOffset.UtcNow.AddHours(1));
+        return new LoginDto(await tokenService.GerarAsync(usuario, ct), DateTimeOffset.UtcNow.AddHours(1));
     }
 }

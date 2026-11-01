@@ -4,5 +4,5 @@ namespace Oficina.Domain.Interfaces.Services;
 
 public interface ITokenService
 {
-    string Gerar(Usuario usuario);
+    Task<string> GerarAsync(Usuario usuario, CancellationToken ct);
 }
