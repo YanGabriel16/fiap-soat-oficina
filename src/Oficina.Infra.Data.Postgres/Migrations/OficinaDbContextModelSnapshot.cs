@@ -61,6 +61,43 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                     b.ToTable("clientes", "clientes");
                 });
 
+            modelBuilder.Entity("Oficina.Domain.Entities.HistoricoItemCatalogo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Acao")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("DataEvento")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ItemCatalogoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)");
+
+                    b.Property<decimal>("Preco")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("QuantidadeEstoque")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemCatalogoId", "DataEvento");
+
+                    b.ToTable("historico_itens_catalogo", "auditoria");
+                });
+
             modelBuilder.Entity("Oficina.Domain.Entities.HistoricoOrdemServico", b =>
                 {
                     b.Property<Guid>("Id")

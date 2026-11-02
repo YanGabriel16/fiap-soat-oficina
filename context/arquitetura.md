@@ -421,3 +421,19 @@ Para executar os testes:
 ```bash
 dotnet test tests/Oficina.Application.Tests/Oficina.Application.Tests.csproj
 ```
+
+Postman:
+
+Também é necessário atualizar e organizar os arquivos do Postman para contemplar todos os endpoints e fluxos da aplicação.
+
+Separar as requisições por entidades, mantendo uma organização clara e padronizada.
+
+Criar pastas específicas para os fluxos de negócio, duplicando as requisições necessárias para representar cada fluxo de forma independente.
+
+Manter o padrão de organização com uma pasta para o fluxo principal de cada entidade e pastas adicionais para os demais fluxos relacionados.
+
+Garantir que todos os endpoints estejam contemplados, incluindo operações de criação, consulta, atualização e exclusão, quando aplicáveis.
+
+Configurar as variáveis de ambiente (Environments) para que sejam atualizadas automaticamente conforme os retornos das requisições, utilizando os IDs e demais informações necessárias para executar as próximas etapas dos fluxos.
+
+Garantir que os fluxos possam ser executados sequencialmente, sem necessidade de preencher manualmente os IDs retornados pelas operações anteriores.

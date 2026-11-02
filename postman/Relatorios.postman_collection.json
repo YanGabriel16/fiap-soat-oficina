@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "Oficina API - Relatórios",
+    "description": "Consultas de indicadores operacionais da oficina.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5080" },
+    { "key": "adminToken", "value": "cole-o-token-do-admin-aqui" },
+    { "key": "itemCatalogoId", "value": "informe-o-id-do-item-aqui" }
+  ],
+  "item": [
+    {
+      "name": "Tempo das ordens de serviço",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": "{{baseUrl}}/api/relatorios/ordens-servico/tempo?inicio=2026-01-01T00:00:00Z&fim=2026-12-31T23:59:59Z"
+      }
+    },
+    {
+      "name": "Orçamentos início/fim",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": "{{baseUrl}}/api/relatorios/orcamentos?inicio=2026-01-01T00:00:00Z&fim=2026-12-31T23:59:59Z"
+      }
+    },
+    {
+      "name": "Ordens por status",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": "{{baseUrl}}/api/relatorios/ordens-servico/status"
+      }
+    },
+    {
+      "name": "Estoque crítico",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": "{{baseUrl}}/api/relatorios/estoque?limite=10"
+      }
+    },
+    {
+      "name": "Histórico do item de catálogo",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": "{{baseUrl}}/api/itens-catalogo/{{itemCatalogoId}}/historico"
+      }
+    }
+  ]
+}

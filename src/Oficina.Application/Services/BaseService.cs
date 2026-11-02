@@ -23,7 +23,7 @@ public abstract class BaseService<TEntity, TDto, TRepository>(TRepository reposi
     public virtual async Task<TDto?> ObterPorIdAsync(Guid id, CancellationToken ct) 
         => (await Repository.ObterPorIdAsync(id, ct)) is { } entidade ? Map(entidade) : default;
 
-    public async Task<bool> ExcluirAsync(Guid id, CancellationToken ct)
+    public virtual async Task<bool> ExcluirAsync(Guid id, CancellationToken ct)
     {
         var entidade = await Repository.ObterPorIdAsync(id, ct);
         

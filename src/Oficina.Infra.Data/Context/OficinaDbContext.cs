@@ -12,5 +12,6 @@ public sealed class OficinaDbContext(DbContextOptions<OficinaDbContext> options)
     public DbSet<OrcamentoItem> OrcamentoItens => Set<OrcamentoItem>();
     public DbSet<OrdemServicoItem> OrdemServicoItens => Set<OrdemServicoItem>();
     public DbSet<HistoricoOrdemServico> HistoricosOrdensServico => Set<HistoricoOrdemServico>();
+    public DbSet<HistoricoItemCatalogo> HistoricosItensCatalogo => Set<HistoricoItemCatalogo>();
     protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyConfigurationsFromAssembly(typeof(OficinaDbContext).Assembly);
 }

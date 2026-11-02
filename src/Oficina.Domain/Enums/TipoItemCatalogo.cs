@@ -1,2 +1,8 @@
 namespace Oficina.Domain.Enums;
-public enum TipoItemCatalogo { Servico = 1, Peca = 2 }
+
+public enum TipoItemCatalogo
+{
+    Servico = 1, 
+    Peca = 2,
+    Insumo = 3
+}

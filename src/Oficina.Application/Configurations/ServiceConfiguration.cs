@@ -19,6 +19,7 @@ public static class ServiceConfiguration
         services.AddScoped<IOrdemServicoService, OrdemServicoService>();
         services.AddScoped<IOrcamentoService, OrcamentoService>();
         services.AddScoped<IHistoricoOrdemServicoService, HistoricoOrdemServicoService>();
+        services.AddScoped<IRelatorioService, RelatorioService>();
         #endregion
 
         #region Repositories
@@ -29,6 +30,8 @@ public static class ServiceConfiguration
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<IOrcamentoRepository, OrcamentoRepository>();
+        services.AddScoped<IRelatorioRepository, RelatorioRepository>();
+        services.AddScoped<IHistoricoItemCatalogoRepository, HistoricoItemCatalogoRepository>();
         #endregion
         
         return services;

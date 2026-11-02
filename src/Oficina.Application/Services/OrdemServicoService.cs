@@ -59,6 +59,8 @@ public sealed class OrdemServicoService(IOrdemServicoRepository repository, IIte
             if (item.Quantidade > catalogo.QuantidadeEstoque) 
                 throw new ArgumentException("Estoque insuficiente.");
             
+            catalogo.RemoverEstoque(item.Quantidade);
+            db.HistoricosItensCatalogo.Add(new HistoricoItemCatalogo(catalogo, AcaoHistoricoItemCatalogo.EstoqueRemovido));
             ordem.Itens.Add(new OrdemServicoItem(ordem.Id, catalogo.Id, item.Quantidade, catalogo.Preco)); total += item.Quantidade * catalogo.Preco;
         }
         

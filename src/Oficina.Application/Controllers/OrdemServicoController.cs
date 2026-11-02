@@ -61,7 +61,7 @@ public sealed class OrdemServicoController(IOrdemServicoService service, IOrcame
         => ExecutarAsync(async () =>
         {
             await service.AtualizarStatusAsync(id, request.Status, UsuarioId(), request.Observacao, ct);
-            return Ok();
+            return NoContent();
         });
 
     [HttpGet("{id:guid}/historico")]

@@ -24,6 +24,10 @@ public sealed class ItemCatalogoController(IItemCatalogoService service) : ApiCo
             return resultado is null ? NotFound() : Ok(resultado);
         });
 
+    [HttpGet("{id:guid}/historico")]
+    public Task<IActionResult> Historico([FromRoute] Guid id, CancellationToken ct)
+        => ExecutarAsync(async () => Ok(await service.ListarHistoricoAsync(id, ct)));
+
     [HttpPost]
     public Task<IActionResult> Criar([FromBody] CriarItemCatalogoRequest request, CancellationToken ct) 
         => ExecutarAsync(async () => Ok(await service.CriarAsync(request.Nome, request.Preco, request.Tipo, request.QuantidadeEstoque, ct)));
@@ -34,6 +38,13 @@ public sealed class ItemCatalogoController(IItemCatalogoService service) : ApiCo
         [FromBody] AtualizarItemCatalogoRequest request,
         CancellationToken ct) 
         => ExecutarAsync(async () => Ok(await service.AtualizarAsync(id, request.Nome, request.Preco, request.Tipo, request.QuantidadeEstoque, ct)));
+
+    [HttpPost("{id:guid}/estoque")]
+    public Task<IActionResult> AdicionarEstoque(
+        [FromRoute] Guid id,
+        [FromBody] AdicionarEstoqueRequest request,
+        CancellationToken ct)
+        => ExecutarAsync(async () => Ok(await service.AdicionarEstoqueAsync(id, request.Quantidade, ct)));
 
     [HttpDelete("{id:guid}")]
     public Task<IActionResult> Excluir([FromRoute] Guid id, CancellationToken ct) 

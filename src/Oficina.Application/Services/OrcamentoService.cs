@@ -7,7 +7,7 @@ using Oficina.Domain.Interfaces.Services;
 
 namespace Oficina.Application.Services;
 
-public sealed class OrcamentoService(IOrcamentoRepository repository, IOrdemServicoRepository ordemRepository, IClienteRepository clienteRepository, Oficina.Infra.Data.Context.OficinaDbContext db) : IOrcamentoService
+public sealed class OrcamentoService(IOrcamentoRepository repository, IOrdemServicoRepository ordemRepository, IClienteRepository clienteRepository, IItemCatalogoRepository itemRepository, Oficina.Infra.Data.Context.OficinaDbContext db) : IOrcamentoService
 {
     public async Task<OrcamentoDto?> ObterPorOrdemAsync(Guid ordemServicoId, Guid? usuarioId, bool cliente, CancellationToken ct)
     {
@@ -29,6 +29,18 @@ public sealed class OrcamentoService(IOrcamentoRepository repository, IOrdemServ
             throw new ConflitoException("O orçamento não pertence ao cliente autenticado.");
         
         orcamento.Decidir(decisao);
+
+        if (decisao == StatusOrcamento.Recusado)
+        {
+            foreach (var item in orcamento.Itens)
+            {
+                var itemCatalogo = await itemRepository.ObterPorIdAsync(item.ItemCatalogoId, ct)
+                    ?? throw new KeyNotFoundException("Item de catálogo não encontrado para reposição de estoque.");
+
+                itemCatalogo.AdicionarEstoque(item.Quantidade);
+                db.HistoricosItensCatalogo.Add(new HistoricoItemCatalogo(itemCatalogo, AcaoHistoricoItemCatalogo.EstoqueAdicionado));
+            }
+        }
         
         var ordem = await ordemRepository.ObterPorIdAsync(ordemServicoId, ct) ?? throw new KeyNotFoundException("Ordem não encontrada.");
         var novoStatus = decisao == StatusOrcamento.Aprovado ? StatusOrdemServico.EmExecucao : StatusOrdemServico.Recebida;
