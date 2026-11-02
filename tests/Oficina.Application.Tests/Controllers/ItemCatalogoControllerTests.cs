@@ -30,6 +30,32 @@ public sealed class ItemCatalogoControllerTests
     }
 
     [Test]
+    public async Task Historico_DeveRetornarEventosDoItem()
+    {
+        var service = new Mock<IItemCatalogoService>();
+        var historico = new[] { new HistoricoItemCatalogoDto(Guid.NewGuid(), Id, AcaoHistoricoItemCatalogo.EstoqueAdicionado, Item.Nome, Item.Preco, Item.Tipo, 10, DateTimeOffset.UtcNow) };
+        service.Setup(x => x.ListarHistoricoAsync(Id, It.IsAny<CancellationToken>())).ReturnsAsync(historico);
+
+        var resultado = await new ItemCatalogoController(service.Object).Historico(Id, CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<OkObjectResult>());
+        Assert.That(((OkObjectResult)resultado).Value, Is.SameAs(historico));
+    }
+
+    [Test]
+    public async Task AdicionarEstoque_DeveRetornarOkEEncaminharQuantidade()
+    {
+        var service = new Mock<IItemCatalogoService>();
+        service.Setup(x => x.AdicionarEstoqueAsync(Id, 5, It.IsAny<CancellationToken>())).ReturnsAsync(Id);
+
+        var resultado = await new ItemCatalogoController(service.Object).AdicionarEstoque(Id, new AdicionarEstoqueRequest(5), CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<OkObjectResult>());
+        Assert.That(((OkObjectResult)resultado).Value, Is.EqualTo(Id));
+        service.Verify(x => x.AdicionarEstoqueAsync(Id, 5, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
     public async Task Criar_DeveRetornarOk()
     {
         var service = new Mock<IItemCatalogoService>();

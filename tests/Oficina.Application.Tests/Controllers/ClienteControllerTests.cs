@@ -37,6 +37,20 @@ public sealed class ClienteControllerTests
     }
 
     [Test]
+    public async Task Criar_ComUsuarioVinculado_DeveUsarSobrecargaComUsuario()
+    {
+        var usuarioId = Guid.NewGuid();
+        var service = new Mock<IClienteService>();
+        service.Setup(x => x.CriarAsync("Ana", "12345678901", usuarioId, It.IsAny<CancellationToken>())).ReturnsAsync(Id);
+
+        var resultado = await new ClienteController(service.Object).Criar(
+            new CriarClienteRequest("Ana", "12345678901") { UsuarioId = usuarioId }, CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<OkObjectResult>());
+        service.Verify(x => x.CriarAsync("Ana", "12345678901", usuarioId, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
     public async Task Atualizar_DeveRetornarOk()
     {
         var service = new Mock<IClienteService>();

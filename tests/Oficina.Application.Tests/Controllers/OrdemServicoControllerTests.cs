@@ -40,6 +40,31 @@ public sealed class OrdemServicoControllerTests
     }
 
     [Test]
+    public async Task Criar_ComUsuarioAutenticado_DeveCriarComOrcamentoERetornarCreated()
+    {
+        var atendenteId = Guid.NewGuid();
+        var itemId = Guid.NewGuid();
+        var service = new Mock<IOrdemServicoService>();
+        service.Setup(x => x.CriarComOrcamentoAsync(
+                ClienteId, VeiculoId, atendenteId, "Revisão",
+                It.Is<IReadOnlyList<(Guid ItemCatalogoId, int Quantidade)>>(itens => itens.Count == 1 && itens[0].ItemCatalogoId == itemId && itens[0].Quantidade == 2),
+                150m, It.IsAny<CancellationToken>())).ReturnsAsync(Id);
+        var controller = new OrdemServicoController(service.Object) { ControllerContext = ContextoAutenticado(atendenteId, "Atendente") };
+        var request = new CriarOrdemServicoRequest(ClienteId, VeiculoId)
+        {
+            Descricao = "Revisão",
+            ValorMaoDeObra = 150m,
+            Itens = [new ItemOrdemRequest(itemId, 2)]
+        };
+
+        var resultado = await controller.Criar(request, CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<ObjectResult>());
+        Assert.That(((ObjectResult)resultado).StatusCode, Is.EqualTo(StatusCodes.Status201Created));
+        Assert.That(((ObjectResult)resultado).Value, Is.EqualTo(Id));
+    }
+
+    [Test]
     public async Task Atualizar_DeveRetornarOk()
     {
         var service = new Mock<IOrdemServicoService>();
@@ -67,13 +92,26 @@ public sealed class OrdemServicoControllerTests
     [Test]
     public async Task Minhas_DeveConsultarSomenteClienteAutenticado()
     {
+        var usuarioId = Guid.NewGuid();
         var service = new Mock<IOrdemServicoService>();
-        service.Setup(x => x.ListarDoClienteAsync(It.IsAny<Guid>(), 0, 20, It.IsAny<CancellationToken>()))
+        service.Setup(x => x.ListarDoClienteAsync(usuarioId, 0, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ResultadoPaginadoDto<OrdemServicoDto>([Ordem], 0, 20, 1));
-        var controller = new OrdemServicoController(service.Object) { ControllerContext = ContextoAutenticado() };
+        var controller = new OrdemServicoController(service.Object) { ControllerContext = ContextoAutenticado(usuarioId) };
 
         Assert.That(await controller.Minhas(0, 20, CancellationToken.None), Is.TypeOf<OkObjectResult>());
-        service.Verify(x => x.ListarDoClienteAsync(It.IsAny<Guid>(), 0, 20, It.IsAny<CancellationToken>()), Times.Once);
+        service.Verify(x => x.ListarDoClienteAsync(usuarioId, 0, 20, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public async Task PorCliente_DeveEncaminharNomeEPaginacao()
+    {
+        var service = new Mock<IOrdemServicoService>();
+        service.Setup(x => x.ListarPorNomeClienteAsync("Ana", 10, 5, It.IsAny<CancellationToken>())).ReturnsAsync(new ResultadoPaginadoDto<OrdemServicoDto>([], 10, 5, 0));
+
+        var resultado = await new OrdemServicoController(service.Object).PorCliente("Ana", 10, 5, CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<OkObjectResult>());
+        service.Verify(x => x.ListarPorNomeClienteAsync("Ana", 10, 5, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
@@ -86,11 +124,54 @@ public sealed class OrdemServicoControllerTests
         service.Verify(x => x.AtualizarStatusAsync(Id, StatusOrdemServico.EmDiagnostico, It.IsAny<Guid>(), "Diagnóstico iniciado", It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static ControllerContext ContextoAutenticado()
+    [Test]
+    public async Task Historico_DeveRetornarOkEAplicarUsuarioAtual()
     {
+        var usuarioId = Guid.NewGuid();
+        var service = new Mock<IOrdemServicoService>();
+        var historicoService = new Mock<IHistoricoOrdemServicoService>();
+        var historico = new[] { new HistoricoOrdemServicoDto(Guid.NewGuid(), Id, null, StatusOrdemServico.Recebida, null, usuarioId, "Atendente", DateTimeOffset.UtcNow, TipoHistoricoOrdem.OrdemServico) };
+        historicoService.Setup(x => x.ListarAsync(Id, usuarioId, false, It.IsAny<CancellationToken>())).ReturnsAsync(historico);
+        var controller = new OrdemServicoController(service.Object, historicoService: historicoService.Object) { ControllerContext = ContextoAutenticado(usuarioId, "Atendente") };
+
+        var resultado = await controller.Historico(Id, CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<OkObjectResult>());
+        Assert.That(((OkObjectResult)resultado).Value, Is.SameAs(historico));
+    }
+
+    [Test]
+    public async Task Orcamento_QuandoNaoEncontrado_DeveRetornarNotFound()
+    {
+        var service = new Mock<IOrdemServicoService>();
+        var orcamentoService = new Mock<IOrcamentoService>();
+        orcamentoService.Setup(x => x.ObterPorOrdemAsync(Id, It.IsAny<Guid>(), false, It.IsAny<CancellationToken>())).ReturnsAsync((OrcamentoDto?)null);
+        var controller = new OrdemServicoController(service.Object, orcamentoService.Object) { ControllerContext = ContextoAutenticado(Guid.NewGuid(), "Atendente") };
+
+        Assert.That(await controller.Orcamento(Id, CancellationToken.None), Is.TypeOf<NotFoundResult>());
+    }
+
+    [Test]
+    public async Task DecidirOrcamento_DeveEncaminharDecisaoERetornarOk()
+    {
+        var usuarioId = Guid.NewGuid();
+        var service = new Mock<IOrdemServicoService>();
+        var orcamentoService = new Mock<IOrcamentoService>();
+        var controller = new OrdemServicoController(service.Object, orcamentoService.Object) { ControllerContext = ContextoAutenticado(usuarioId, "Cliente") };
+
+        var resultado = await controller.DecidirOrcamento(Id, new DecidirOrcamentoRequest(StatusOrcamento.Recusado), CancellationToken.None);
+
+        Assert.That(resultado, Is.TypeOf<OkResult>());
+        orcamentoService.Verify(x => x.DecidirAsync(Id, usuarioId, StatusOrcamento.Recusado, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    private static ControllerContext ContextoAutenticado(Guid? usuarioId = null, string role = "Cliente")
+    {
+        var id = (usuarioId ?? Guid.NewGuid()).ToString();
         var identidade = new System.Security.Claims.ClaimsIdentity([
-            new System.Security.Claims.Claim("sub", Guid.NewGuid().ToString()),
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "Cliente")], "test");
+            new System.Security.Claims.Claim("sub", id),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, id),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, role)], "test");
         return new ControllerContext { HttpContext = new DefaultHttpContext { User = new System.Security.Claims.ClaimsPrincipal(identidade) } };
     }
 }
