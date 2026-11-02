@@ -1,0 +1,39 @@
+classDiagram
+    class OrdemServico {
+      +Guid Id
+      +Guid ClienteId
+      +Guid VeiculoId
+      +StatusOrdemServico Status
+      +DefinirOrcamento()
+      +AlterarStatus()
+    }
+    class OrdemServicoItem {
+      +Guid ItemCatalogoId
+      +int Quantidade
+      +decimal ValorUnitario
+    }
+    class Orcamento {
+      +StatusOrcamento Status
+      +DateTimeOffset DataDecisao
+      +Decidir()
+    }
+    class OrcamentoItem
+    class ItemCatalogo {
+      +TipoItemCatalogo Tipo
+      +int QuantidadeEstoque
+      +AdicionarEstoque()
+      +RemoverEstoque()
+    }
+    class Cliente
+    class Veiculo
+    class HistoricoOrdemServico
+    class HistoricoItemCatalogo
+    OrdemServico "1" *-- "0..*" OrdemServicoItem
+    OrdemServico "1" *-- "0..1" Orcamento
+    OrdemServico "1" *-- "0..*" HistoricoOrdemServico
+    Orcamento "1" *-- "0..*" OrcamentoItem
+    Cliente "1" --> "0..*" OrdemServico
+    Cliente "1" --> "0..*" Veiculo
+    OrdemServicoItem "*" --> "1" ItemCatalogo
+    OrcamentoItem "*" --> "1" ItemCatalogo
+    ItemCatalogo "1" --> "0..*" HistoricoItemCatalogo

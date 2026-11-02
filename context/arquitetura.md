@@ -1,5 +1,7 @@
 # Arquitetura da API — Oficina
 
+Documentação DDD completa: [docs/ddd/README.md](../docs/ddd/README.md).
+
 ## 1. Visão geral
 
 A Oficina API é uma aplicação monolítica em camadas, desenvolvida em C# com ASP.NET Core Web API e .NET 10. A solução gerencia clientes, usuários, veículos, itens de catálogo, ordens de serviço, orçamentos, estoque, históricos e relatórios.

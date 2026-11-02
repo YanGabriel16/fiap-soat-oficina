@@ -1,0 +1,319 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2480 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+(Event Storming ??? Oficina API) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(# Event Storming a?? Oficina API) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## ConvenA?A?es) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(- **Ator:** quem inicia ou autoriza uma aA?A?o.) Tj
+0 -14 Td
+(- **Comando:** intenA?A?o enviada A? API.) Tj
+0 -14 Td
+(- **Evento:** mudanA?a de negA?cio persistida pela aplicaA?A?o.) Tj
+0 -14 Td
+(- **PolA?tica:** regra que reage a um evento e produz uma aA?A?o.) Tj
+0 -14 Td
+(- **Read model:** consulta ou relatA?rio derivado do estado persistido.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Os eventos abaixo nA?o sA?o classes de eventos publicadas em um barramento. Na implementaA?A?o atual, eles sA?o representados por mudanA?as nas entidades e registros de histA?rico.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Fluxo 1 a?? CriaA?A?o da Ordem de ServiA?o) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Linha do tempo) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(text) Tj
+0 -14 Td
+(Atendente) Tj
+0 -14 Td
+(  a?? CriarOrdemComOrcamento) Tj
+0 -14 Td
+(  a?? OrdemServicoCriada) Tj
+0 -14 Td
+(  a?? ItensDoCatalogoVerificados) Tj
+0 -14 Td
+(  a?? EstoqueDosItensRemovido) Tj
+0 -14 Td
+(  a?? OrcamentoCriado) Tj
+0 -14 Td
+(  a?? HistoricoDaOrdemRegistrado) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Comandos, eventos e polA?ticas) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| Tipo | Elemento | ImplementaA?A?o real |) Tj
+0 -14 Td
+(|---|---|---|) Tj
+0 -14 Td
+(| Ator | Atendente | Token com RoleUsuario.Atendente |) Tj
+0 -14 Td
+(| Comando | Criar ordem com orA?amento | POST /api/ordens-servico autenticado |) Tj
+0 -14 Td
+(| PolA?tica | Validar item existente | OrdemServicoService.CriarComOrcamentoAsync |) Tj
+0 -14 Td
+(| PolA?tica | Impedir quantidade maior que o estoque | ItemCatalogo.RemoverEstoque |) Tj
+0 -14 Td
+(| Evento | Ordem criada | OrdemServico + histA?rico inicial |) Tj
+0 -14 Td
+(| Evento | Estoque removido | HistoricoItemCatalogo com EstoqueRemovido |) Tj
+0 -14 Td
+(| Evento | OrA?amento criado | Orcamento e OrcamentoItem |) Tj
+0 -14 Td
+(| PolA?tica | Persistir tudo atomicamente | TransaA?A?o do OficinaDbContext |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Resultado) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(A ordem A? criada com os itens, preA?o unitA?rio do momento da criaA?A?o, valor de mA?o de obra e valor total. Se qualquer item nA?o existir ou nA?o possuir estoque suficiente, a transaA?A?o nA?o A? concluA?da.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Fluxo 2 a?? Acompanhamento da Ordem de ServiA?o) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Linha do tempo) Tj
+0 -14 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 2156 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+() Tj
+0 -14 Td
+(text) Tj
+0 -14 Td
+(Atendente) Tj
+0 -14 Td
+(  a?? AlterarStatus) Tj
+0 -14 Td
+(  a?? StatusDaOrdemAlterado) Tj
+0 -14 Td
+(  a?? HistoricoDaOrdemRegistrado) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Cliente) Tj
+0 -14 Td
+(  a?? ConsultarOrcamento) Tj
+0 -14 Td
+(  a?? AprovarOrcamento ou RecusarOrcamento) Tj
+0 -14 Td
+(  a?? OrcamentoDecidido) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Comandos, eventos e polA?ticas) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| Tipo | Elemento | ImplementaA?A?o real |) Tj
+0 -14 Td
+(|---|---|---|) Tj
+0 -14 Td
+(| Comando | Alterar status | PATCH /api/ordens-servico/{id}/status |) Tj
+0 -14 Td
+(| PolA?tica | Validar transiA?A?o | OrdemServico.AlterarStatus |) Tj
+0 -14 Td
+(| Evento | Status alterado | HistoricoOrdemServico |) Tj
+0 -14 Td
+(| Comando | Consultar histA?rico | GET /api/ordens-servico/{id}/historico |) Tj
+0 -14 Td
+(| PolA?tica | Cliente sA? acessa a prA?pria OS | HistoricoOrdemServicoService |) Tj
+0 -14 Td
+(| Comando | Consultar orA?amento | GET /api/ordens-servico/{id}/orcamento |) Tj
+0 -14 Td
+(| Comando | Decidir orA?amento | POST /api/ordens-servico/{id}/orcamento/decisao |) Tj
+0 -14 Td
+(| PolA?tica | Somente proprietA?rio decide | OrcamentoService.DecidirAsync |) Tj
+0 -14 Td
+(| Evento | OrA?amento aprovado ou recusado | Orcamento.DataDecisao e histA?rico |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### TransiA?A?es implementadas) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(text) Tj
+0 -14 Td
+(Recebida a?? EmDiagnostico a?? AguardandoAprovacao a?? EmExecucao a?? Finalizada a?? Entregue) Tj
+0 -14 Td
+(                                      a??a??a??a??a??a??a??a??a??a??a??a??a??a??a??a?? Recebida \(recusa\)) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Fluxo 3 a?? GestA?o de peA?as e insumos) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Linha do tempo) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(text) Tj
+0 -14 Td
+(Atendente/Admin) Tj
+0 -14 Td
+(  a?? CriarOuAtualizarItem) Tj
+0 -14 Td
+(  a?? ItemCatalogoCriado ou ItemCatalogoAtualizado) Tj
+0 -14 Td
+(  a?? HistoricoDoCatalogoRegistrado) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Atendente/Admin) Tj
+0 -14 Td
+(  a?? AdicionarEstoque) Tj
+0 -14 Td
+(  a?? EstoqueAdicionado) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 1890 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+(Ordem criada) Tj
+0 -14 Td
+(  a?? EstoqueRemovido) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(OrA?amento recusado) Tj
+0 -14 Td
+(  a?? EstoqueReposto) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(### Comandos, eventos e polA?ticas) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| Tipo | Elemento | ImplementaA?A?o real |) Tj
+0 -14 Td
+(|---|---|---|) Tj
+0 -14 Td
+(| Comando | Criar item | POST /api/itens-catalogo |) Tj
+0 -14 Td
+(| Comando | Atualizar item | PUT /api/itens-catalogo/{id} |) Tj
+0 -14 Td
+(| Comando | Adicionar estoque | POST /api/itens-catalogo/{id}/estoque |) Tj
+0 -14 Td
+(| Comando | Consultar histA?rico | GET /api/itens-catalogo/{id}/historico |) Tj
+0 -14 Td
+(| PolA?tica | Quantidade adicionada deve ser positiva | ItemCatalogo.AdicionarEstoque |) Tj
+0 -14 Td
+(| PolA?tica | Quantidade removida deve ser positiva e disponA?vel | ItemCatalogo.RemoverEstoque |) Tj
+0 -14 Td
+(| Evento | Estoque adicionado | AcaoHistoricoItemCatalogo.EstoqueAdicionado |) Tj
+0 -14 Td
+(| Evento | Estoque removido | AcaoHistoricoItemCatalogo.EstoqueRemovido |) Tj
+0 -14 Td
+(| Evento | Estoque reposto | ReposiA?A?o na recusa do orA?amento |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Atores) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(- **Admin:** administra cadastros e pode consultar os recursos administrativos.) Tj
+0 -14 Td
+(- **Atendente:** opera catA?logo, veA?culos, clientes e ordens.) Tj
+0 -14 Td
+(- **Cliente:** consulta suas ordens e decide seus orA?amentos.) Tj
+0 -14 Td
+(- **Sistema:** executa transaA?A?es, aplica migrations e registra histA?ricos durante os casos de uso.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## LimitaA?A?es do modelo atual) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Os eventos sA?o persistidos como histA?rico, mas nA?o hA? event bus, integraA?A?o assA?ncrona, sagas, publicaA?A?o externa ou projeA?A?es CQRS. Esses itens sA?o possibilidades de evoluA?A?o, nA?o comportamentos existentes.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000253 00000 n 
+0000002785 00000 n 
+0000002911 00000 n 
+0000005119 00000 n 
+0000005245 00000 n 
+0000007187 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+7257
+%%EOF

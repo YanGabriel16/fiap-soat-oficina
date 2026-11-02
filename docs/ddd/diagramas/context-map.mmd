@@ -1,0 +1,13 @@
+flowchart LR
+    Auth[Identidade e Acesso]
+    Atendimento[Atendimento e Ordem de Serviço]
+    Catalogo[Catálogo e Estoque]
+    Relatorios[Relatórios]
+    Banco[(PostgreSQL)]
+    Auth -->|JWT e roles| Atendimento
+    Auth -->|JWT e roles| Catalogo
+    Atendimento -->|consome itens e movimenta estoque| Catalogo
+    Relatorios -->|consulta OS, orçamentos e estoque| Banco
+    Auth --> Banco
+    Atendimento --> Banco
+    Catalogo --> Banco

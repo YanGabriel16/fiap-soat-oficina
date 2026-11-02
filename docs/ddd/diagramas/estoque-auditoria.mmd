@@ -1,0 +1,9 @@
+flowchart TD
+    Criar[Criação da OS com orçamento] --> Baixa[RemoverEstoque]
+    Baixa --> AuditoriaSaida[Histórico: EstoqueRemovido]
+    Recusa[Orçamento recusado] --> Repor[AdicionarEstoque]
+    Repor --> AuditoriaEntrada[Histórico: EstoqueAdicionado]
+    Cadastro[CRUD do item] --> AuditoriaCRUD[Histórico: Criado, Atualizado ou Excluído]
+    AuditoriaSaida --> Tabela[(auditoria.historico_itens_catalogo)]
+    AuditoriaEntrada --> Tabela
+    AuditoriaCRUD --> Tabela

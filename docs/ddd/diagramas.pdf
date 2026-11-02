@@ -1,0 +1,319 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1799 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+(Diagramas de dom??nio ??? Oficina API) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(# Diagramas de domA?nio) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Os diagramas abaixo representam o cA?digo atual. Os arquivos .mmd sA?o fontes Mermaid editA?veis.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Context Map) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(mermaid) Tj
+0 -14 Td
+(flowchart LR) Tj
+0 -14 Td
+(    Auth[Identidade e Acesso]) Tj
+0 -14 Td
+(    Atendimento[Atendimento e Ordem de ServiA?o]) Tj
+0 -14 Td
+(    Catalogo[CatA?logo e Estoque]) Tj
+0 -14 Td
+(    Relatorios[RelatA?rios]) Tj
+0 -14 Td
+(    Banco[\(PostgreSQL\)]) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(    Auth -->|JWT e roles| Atendimento) Tj
+0 -14 Td
+(    Auth -->|JWT e roles| Catalogo) Tj
+0 -14 Td
+(    Atendimento -->|consome itens e movimenta estoque| Catalogo) Tj
+0 -14 Td
+(    Relatorios -->|consulta OS, orA?amentos e estoque| Banco) Tj
+0 -14 Td
+(    Auth --> Banco) Tj
+0 -14 Td
+(    Atendimento --> Banco) Tj
+0 -14 Td
+(    Catalogo --> Banco) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Fonte: context-map.mmd.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Agregados e entidades) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(mermaid) Tj
+0 -14 Td
+(classDiagram) Tj
+0 -14 Td
+(    class OrdemServico {) Tj
+0 -14 Td
+(      +Guid Id) Tj
+0 -14 Td
+(      +Guid ClienteId) Tj
+0 -14 Td
+(      +Guid VeiculoId) Tj
+0 -14 Td
+(      +StatusOrdemServico Status) Tj
+0 -14 Td
+(      +DefinirOrcamento\(\)) Tj
+0 -14 Td
+(      +AlterarStatus\(\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class OrdemServicoItem {) Tj
+0 -14 Td
+(      +Guid ItemCatalogoId) Tj
+0 -14 Td
+(      +int Quantidade) Tj
+0 -14 Td
+(      +decimal ValorUnitario) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class Orcamento {) Tj
+0 -14 Td
+(      +StatusOrcamento Status) Tj
+0 -14 Td
+(      +DateTimeOffset DataDecisao) Tj
+0 -14 Td
+(      +Decidir\(\)) Tj
+0 -14 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 2010 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+(    }) Tj
+0 -14 Td
+(    class OrcamentoItem) Tj
+0 -14 Td
+(    class ItemCatalogo {) Tj
+0 -14 Td
+(      +TipoItemCatalogo Tipo) Tj
+0 -14 Td
+(      +int QuantidadeEstoque) Tj
+0 -14 Td
+(      +AdicionarEstoque\(\)) Tj
+0 -14 Td
+(      +RemoverEstoque\(\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class Cliente) Tj
+0 -14 Td
+(    class Veiculo) Tj
+0 -14 Td
+(    class HistoricoOrdemServico) Tj
+0 -14 Td
+(    class HistoricoItemCatalogo) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(    OrdemServico "1" *-- "0..*" OrdemServicoItem) Tj
+0 -14 Td
+(    OrdemServico "1" *-- "0..1" Orcamento) Tj
+0 -14 Td
+(    OrdemServico "1" *-- "0..*" HistoricoOrdemServico) Tj
+0 -14 Td
+(    Orcamento "1" *-- "0..*" OrcamentoItem) Tj
+0 -14 Td
+(    Cliente "1" --> "0..*" OrdemServico) Tj
+0 -14 Td
+(    Cliente "1" --> "0..*" Veiculo) Tj
+0 -14 Td
+(    OrdemServicoItem "*" --> "1" ItemCatalogo) Tj
+0 -14 Td
+(    OrcamentoItem "*" --> "1" ItemCatalogo) Tj
+0 -14 Td
+(    ItemCatalogo "1" --> "0..*" HistoricoItemCatalogo) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Fonte: agregados.mmd.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Fluxo de ordem e orA?amento) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(mermaid) Tj
+0 -14 Td
+(sequenceDiagram) Tj
+0 -14 Td
+(    actor A as Atendente) Tj
+0 -14 Td
+(    actor C as Cliente) Tj
+0 -14 Td
+(    participant API) Tj
+0 -14 Td
+(    participant OS as OrdemServicoService) Tj
+0 -14 Td
+(    participant DB as PostgreSQL) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(    A->>API: POST /api/ordens-servico) Tj
+0 -14 Td
+(    API->>OS: CriarComOrcamentoAsync) Tj
+0 -14 Td
+(    OS->>DB: Verifica itens e estoque) Tj
+0 -14 Td
+(    OS->>DB: Salva OS, orA?amento, histA?rico e baixa) Tj
+0 -14 Td
+(    DB-->>API: Ordem criada) Tj
+0 -14 Td
+(    C->>API: POST /{id}/orcamento/decisao) Tj
+0 -14 Td
+(    API->>DB: Valida proprietA?rio e decisA?o) Tj
+0 -14 Td
+(    alt Aprovado) Tj
+0 -14 Td
+(        DB->>DB: AvanA?a para EmExecucao) Tj
+0 -14 Td
+(    else Recusado) Tj
+0 -14 Td
+(        DB->>DB: RepA?e itens no estoque) Tj
+0 -14 Td
+(    end) Tj
+0 -14 Td
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 1562 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Fonte: fluxo-ordem-servico.mmd.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## Estoque e auditoria) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(mermaid) Tj
+0 -14 Td
+(flowchart TD) Tj
+0 -14 Td
+(    Criar[CriaA?A?o da OS com orA?amento] --> Baixa[RemoverEstoque]) Tj
+0 -14 Td
+(    Baixa --> AuditoriaSaida[HistA?rico: EstoqueRemovido]) Tj
+0 -14 Td
+(    Recusa[OrA?amento recusado] --> Repor[AdicionarEstoque]) Tj
+0 -14 Td
+(    Repor --> AuditoriaEntrada[HistA?rico: EstoqueAdicionado]) Tj
+0 -14 Td
+(    Cadastro[CRUD do item] --> AuditoriaCRUD[HistA?rico: Criado, Atualizado ou ExcluA?do]) Tj
+0 -14 Td
+(    AuditoriaSaida --> Tabela[\(auditoria.historico_itens_catalogo\)]) Tj
+0 -14 Td
+(    AuditoriaEntrada --> Tabela) Tj
+0 -14 Td
+(    AuditoriaCRUD --> Tabela) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(Fonte: estoque-auditoria.mmd.) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(## RelaA?A?o com a implementaA?A?o) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+(| Conceito | Componentes |) Tj
+0 -14 Td
+(|---|---|) Tj
+0 -14 Td
+(| Entrada HTTP | Controllers em src/Oficina.Application/Controllers |) Tj
+0 -14 Td
+(| Caso de uso | Services em src/Oficina.Application/Services |) Tj
+0 -14 Td
+(| Estado do domA?nio | Entidades em src/Oficina.Domain/Entities |) Tj
+0 -14 Td
+(| PersistA?ncia | Repositories em src/Oficina.Infra.Data/Repositories |) Tj
+0 -14 Td
+(| Mapeamento | src/Oficina.Infra.Data/Mappings |) Tj
+0 -14 Td
+(| Banco e migrations | src/Oficina.Infra.Data.Postgres/Migrations |) Tj
+0 -14 Td
+(| Testes | tests/Oficina.Application.Tests |) Tj
+0 -14 Td
+() Tj
+0 -14 Td
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000253 00000 n 
+0000002104 00000 n 
+0000002230 00000 n 
+0000004292 00000 n 
+0000004418 00000 n 
+0000006032 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+6102
+%%EOF

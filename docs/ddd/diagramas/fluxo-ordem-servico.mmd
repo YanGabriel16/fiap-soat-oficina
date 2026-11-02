@@ -1,0 +1,18 @@
+sequenceDiagram
+    actor A as Atendente
+    actor C as Cliente
+    participant API
+    participant OS as OrdemServicoService
+    participant DB as PostgreSQL
+    A->>API: POST /api/ordens-servico
+    API->>OS: CriarComOrcamentoAsync
+    OS->>DB: Verifica itens e estoque
+    OS->>DB: Salva OS, orçamento, histórico e baixa
+    DB-->>API: Ordem criada
+    C->>API: POST /{id}/orcamento/decisao
+    API->>DB: Valida proprietário e decisão
+    alt Aprovado
+        DB->>DB: Avança para EmExecucao
+    else Recusado
+        DB->>DB: Repõe itens no estoque
+    end

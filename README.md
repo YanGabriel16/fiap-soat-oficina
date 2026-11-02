@@ -35,7 +35,7 @@ Controller → Service → Repository → Entity Framework Core → PostgreSQL
 
 Os controllers não acessam o banco diretamente. As regras ficam nos services e no domínio, enquanto os repositories concentram o acesso a dados.
 
-Documentação de arquitetura e DDD: [context/arquitetura.md](./context/arquitetura.md).
+Documentação de arquitetura e DDD: [docs/ddd/README.md](./docs/ddd/README.md).
 
 ## Tecnologias utilizadas
 
@@ -216,7 +216,7 @@ context/
 
 ## Documentação DDD
 
-A documentação de arquitetura, camadas, entidades, fluxo e decisões relacionadas ao domínio está em [context/arquitetura.md](./context/arquitetura.md).
+A documentação de arquitetura, camadas, entidades, fluxo e decisões relacionadas ao domínio está em [docs/ddd/README.md](./docs/ddd/README.md), com a arquitetura geral em [context/arquitetura.md](./context/arquitetura.md).
 
 ## Vídeo da entrega
 
