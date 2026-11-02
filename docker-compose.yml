@@ -4,18 +4,34 @@ services:
     container_name: oficina-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: oficina
-      POSTGRES_USER: oficina
-      POSTGRES_PASSWORD: oficina_dev
+      POSTGRES_DB: meubanco
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
     ports:
       - "5432:5432"
     volumes:
       - oficina-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U oficina -d oficina"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d meubanco"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oficina-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=meubanco;Username=postgres;Password=123456
+    ports:
+      - "8080:8080"
 
 volumes:
   oficina-postgres-data:
