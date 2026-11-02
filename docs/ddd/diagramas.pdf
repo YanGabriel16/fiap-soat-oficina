@@ -3,13 +3,13 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R] /Count 5 >>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 4 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 13 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<< /Length 1799 >>
+<< /Length 1851 >>
 stream
 BT
 /F1 10 Tf
@@ -76,9 +76,121 @@ BT
 0 -14 Td
 (classDiagram) Tj
 0 -14 Td
-(    class OrdemServico {) Tj
+(    class EntidadeBase {) Tj
 0 -14 Td
 (      +Guid Id) Tj
+0 -14 Td
+(      +DateTimeOffset DataCriacao) Tj
+0 -14 Td
+(      +DateTimeOffset DataUltimaModificacao) Tj
+0 -14 Td
+(      +DateTimeOffset DataExclusao) Tj
+0 -14 Td
+(      +bool Excluida) Tj
+0 -14 Td
+(      +AtualizarDataModificacao\(\)) Tj
+0 -14 Td
+(      +Excluir\(\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class Usuario {) Tj
+0 -14 Td
+(      +string Nome) Tj
+0 -14 Td
+(      +string Email) Tj
+0 -14 Td
+(      +string SenhaHash) Tj
+0 -14 Td
+(      +RoleUsuario Role) Tj
+0 -14 Td
+(      +Cliente Cliente) Tj
+0 -14 Td
+(      +AlterarRole\(RoleUsuario role\)) Tj
+0 -14 Td
+(      +AtualizarSenha\(string senhaHash\)) Tj
+0 -14 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 13 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 2053 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+(    }) Tj
+0 -14 Td
+(    class Token {) Tj
+0 -14 Td
+(      +Guid UsuarioId) Tj
+0 -14 Td
+(      +string Valor) Tj
+0 -14 Td
+(      +DateTimeOffset ExpiraEm) Tj
+0 -14 Td
+(      +bool Revogado) Tj
+0 -14 Td
+(      +Revogar\(\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class Cliente {) Tj
+0 -14 Td
+(      +string Nome) Tj
+0 -14 Td
+(      +string Documento) Tj
+0 -14 Td
+(      +Guid UsuarioId) Tj
+0 -14 Td
+(      +Usuario Usuario) Tj
+0 -14 Td
+(      +ICollection~Veiculo~ Veiculos) Tj
+0 -14 Td
+(      +Atualizar\(string nome, string documento\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class Veiculo {) Tj
+0 -14 Td
+(      +Guid ClienteId) Tj
+0 -14 Td
+(      +Cliente Cliente) Tj
+0 -14 Td
+(      +string Placa) Tj
+0 -14 Td
+(      +string Marca) Tj
+0 -14 Td
+(      +string Modelo) Tj
+0 -14 Td
+(      +int Ano) Tj
+0 -14 Td
+(      +Atualizar\(Guid clienteId, string placa, string marca, string modelo, int ano\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class ItemCatalogo {) Tj
+0 -14 Td
+(      +string Nome) Tj
+0 -14 Td
+(      +decimal Preco) Tj
+0 -14 Td
+(      +TipoItemCatalogo Tipo) Tj
+0 -14 Td
+(      +int QuantidadeEstoque) Tj
+0 -14 Td
+(      +Atualizar\(string nome, decimal preco, TipoItemCatalogo tipo, int quantidadeEstoque\)) Tj
+0 -14 Td
+(      +AdicionarEstoque\(int quantidade\)) Tj
+0 -14 Td
+(      +RemoverEstoque\(int quantidade\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class OrdemServico {) Tj
 0 -14 Td
 (      +Guid ClienteId) Tj
 0 -14 Td
@@ -86,13 +198,47 @@ BT
 0 -14 Td
 (      +StatusOrdemServico Status) Tj
 0 -14 Td
-(      +DefinirOrcamento\(\)) Tj
+(      +decimal ValorTotal) Tj
 0 -14 Td
-(      +AlterarStatus\(\)) Tj
+(      +Guid AtendenteId) Tj
+0 -14 Td
+(      +string Descricao) Tj
+0 -14 Td
+(      +decimal ValorMaoDeObra) Tj
+0 -14 Td
+(      +Cliente Cliente) Tj
+0 -14 Td
+(      +Usuario Atendente) Tj
+0 -14 Td
+(      +ICollection~OrdemServicoItem~ Itens) Tj
+0 -14 Td
+(      +Orcamento Orcamento) Tj
+0 -14 Td
+(      +ICollection~HistoricoOrdemServico~ Historico) Tj
+0 -14 Td
+(      +Atualizar\(Guid clienteId, Guid veiculoId, StatusOrdemServico status, decimal valorTotal\)) Tj
+0 -14 Td
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 13 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 2069 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
+(      +DefinirOrcamento\(decimal valorMaoDeObra, decimal valorTotal\)) Tj
+0 -14 Td
+(      +AlterarStatus\(StatusOrdemServico novoStatus\)) Tj
 0 -14 Td
 (    }) Tj
 0 -14 Td
 (    class OrdemServicoItem {) Tj
+0 -14 Td
+(      +Guid OrdemServicoId) Tj
 0 -14 Td
 (      +Guid ItemCatalogoId) Tj
 0 -14 Td
@@ -100,53 +246,139 @@ BT
 0 -14 Td
 (      +decimal ValorUnitario) Tj
 0 -14 Td
+(      +decimal ValorTotal) Tj
+0 -14 Td
+(      +ItemCatalogo ItemCatalogo) Tj
+0 -14 Td
 (    }) Tj
 0 -14 Td
 (    class Orcamento {) Tj
+0 -14 Td
+(      +Guid OrdemServicoId) Tj
+0 -14 Td
+(      +Guid ClienteId) Tj
+0 -14 Td
+(      +decimal ValorMaoDeObra) Tj
+0 -14 Td
+(      +decimal ValorTotal) Tj
 0 -14 Td
 (      +StatusOrcamento Status) Tj
 0 -14 Td
 (      +DateTimeOffset DataDecisao) Tj
 0 -14 Td
-(      +Decidir\(\)) Tj
+(      +OrdemServico OrdemServico) Tj
+0 -14 Td
+(      +Cliente Cliente) Tj
+0 -14 Td
+(      +ICollection~OrcamentoItem~ Itens) Tj
+0 -14 Td
+(      +AdicionarItem\(Guid itemCatalogoId, int quantidade, decimal valorUnitario\)) Tj
+0 -14 Td
+(      +Decidir\(StatusOrcamento status\)) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class OrcamentoItem {) Tj
+0 -14 Td
+(      +Guid OrcamentoId) Tj
+0 -14 Td
+(      +Guid ItemCatalogoId) Tj
+0 -14 Td
+(      +int Quantidade) Tj
+0 -14 Td
+(      +decimal ValorUnitario) Tj
+0 -14 Td
+(      +decimal ValorTotal) Tj
+0 -14 Td
+(      +ItemCatalogo ItemCatalogo) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class HistoricoOrdemServico {) Tj
+0 -14 Td
+(      +Guid OrdemServicoId) Tj
+0 -14 Td
+(      +StatusOrdemServico StatusAnterior) Tj
+0 -14 Td
+(      +StatusOrdemServico NovoStatus) Tj
+0 -14 Td
+(      +string Observacao) Tj
+0 -14 Td
+(      +Guid UsuarioId) Tj
+0 -14 Td
+(      +TipoHistoricoOrdem Tipo) Tj
+0 -14 Td
+(      +Usuario Usuario) Tj
+0 -14 Td
+(      +OrdemServico OrdemServico) Tj
+0 -14 Td
+(    }) Tj
+0 -14 Td
+(    class HistoricoItemCatalogo {) Tj
+0 -14 Td
+(      +Guid Id) Tj
+0 -14 Td
+(      +Guid ItemCatalogoId) Tj
+0 -14 Td
+(      +AcaoHistoricoItemCatalogo Acao) Tj
+0 -14 Td
+(      +string Nome) Tj
+0 -14 Td
+(      +decimal Preco) Tj
 0 -14 Td
 ET
 endstream
 endobj
-5 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 6 0 R >>
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 13 0 R >> >> /Contents 10 0 R >>
 endobj
-6 0 obj
-<< /Length 2010 >>
+10 0 obj
+<< /Length 2187 >>
 stream
 BT
 /F1 10 Tf
 50 760 Td
-(    }) Tj
-0 -14 Td
-(    class OrcamentoItem) Tj
-0 -14 Td
-(    class ItemCatalogo {) Tj
-0 -14 Td
 (      +TipoItemCatalogo Tipo) Tj
 0 -14 Td
 (      +int QuantidadeEstoque) Tj
 0 -14 Td
-(      +AdicionarEstoque\(\)) Tj
-0 -14 Td
-(      +RemoverEstoque\(\)) Tj
+(      +DateTimeOffset DataEvento) Tj
 0 -14 Td
 (    }) Tj
 0 -14 Td
-(    class Cliente) Tj
+(    EntidadeBase <|-- Usuario) Tj
 0 -14 Td
-(    class Veiculo) Tj
+(    EntidadeBase <|-- Token) Tj
 0 -14 Td
-(    class HistoricoOrdemServico) Tj
+(    EntidadeBase <|-- Cliente) Tj
 0 -14 Td
-(    class HistoricoItemCatalogo) Tj
+(    EntidadeBase <|-- Veiculo) Tj
 0 -14 Td
-() Tj
+(    EntidadeBase <|-- ItemCatalogo) Tj
+0 -14 Td
+(    EntidadeBase <|-- OrdemServico) Tj
+0 -14 Td
+(    EntidadeBase <|-- OrdemServicoItem) Tj
+0 -14 Td
+(    EntidadeBase <|-- Orcamento) Tj
+0 -14 Td
+(    EntidadeBase <|-- OrcamentoItem) Tj
+0 -14 Td
+(    EntidadeBase <|-- HistoricoOrdemServico) Tj
+0 -14 Td
+(    Usuario "1" --> "0..1" Cliente) Tj
+0 -14 Td
+(    Usuario "1" --> "0..*" Token) Tj
+0 -14 Td
+(    Usuario "1" --> "0..*" HistoricoOrdemServico) Tj
+0 -14 Td
+(    Cliente "1" --> "0..*" Veiculo) Tj
+0 -14 Td
+(    Cliente "1" --> "0..*" OrdemServico) Tj
+0 -14 Td
+(    Cliente "1" --> "0..*" Orcamento) Tj
+0 -14 Td
+(    Veiculo "1" --> "1" Cliente) Tj
 0 -14 Td
 (    OrdemServico "1" *-- "0..*" OrdemServicoItem) Tj
 0 -14 Td
@@ -154,13 +386,17 @@ BT
 0 -14 Td
 (    OrdemServico "1" *-- "0..*" HistoricoOrdemServico) Tj
 0 -14 Td
-(    Orcamento "1" *-- "0..*" OrcamentoItem) Tj
+(    OrdemServico "*" --> "1" Cliente) Tj
 0 -14 Td
-(    Cliente "1" --> "0..*" OrdemServico) Tj
+(    OrdemServico "*" --> "1" Veiculo) Tj
 0 -14 Td
-(    Cliente "1" --> "0..*" Veiculo) Tj
+(    OrdemServico "*" --> "1" Usuario : atendente) Tj
 0 -14 Td
 (    OrdemServicoItem "*" --> "1" ItemCatalogo) Tj
+0 -14 Td
+(    Orcamento "1" *-- "0..*" OrcamentoItem) Tj
+0 -14 Td
+(    Orcamento "*" --> "1" OrdemServico) Tj
 0 -14 Td
 (    OrcamentoItem "*" --> "1" ItemCatalogo) Tj
 0 -14 Td
@@ -198,6 +434,18 @@ BT
 0 -14 Td
 (    API->>OS: CriarComOrcamentoAsync) Tj
 0 -14 Td
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 13 0 R >> >> /Contents 12 0 R >>
+endobj
+12 0 obj
+<< /Length 2035 >>
+stream
+BT
+/F1 10 Tf
+50 760 Td
 (    OS->>DB: Verifica itens e estoque) Tj
 0 -14 Td
 (    OS->>DB: Salva OS, orA?amento, histA?rico e baixa) Tj
@@ -218,18 +466,6 @@ BT
 0 -14 Td
 (    end) Tj
 0 -14 Td
-ET
-endstream
-endobj
-7 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 8 0 R >>
-endobj
-8 0 obj
-<< /Length 1562 >>
-stream
-BT
-/F1 10 Tf
-50 760 Td
 () Tj
 0 -14 Td
 () Tj
@@ -297,23 +533,27 @@ BT
 ET
 endstream
 endobj
-9 0 obj
+13 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 xref
-0 10
+0 14
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
-0000000127 00000 n 
-0000000253 00000 n 
-0000002104 00000 n 
-0000002230 00000 n 
-0000004292 00000 n 
-0000004418 00000 n 
-0000006032 00000 n 
+0000000140 00000 n 
+0000000267 00000 n 
+0000002170 00000 n 
+0000002297 00000 n 
+0000004402 00000 n 
+0000004529 00000 n 
+0000006650 00000 n 
+0000006778 00000 n 
+0000009018 00000 n 
+0000009147 00000 n 
+0000011235 00000 n 
 trailer
-<< /Size 10 /Root 1 0 R >>
+<< /Size 14 /Root 1 0 R >>
 startxref
-6102
+11306
 %%EOF
