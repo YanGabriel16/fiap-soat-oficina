@@ -220,9 +220,6 @@ A documentação de arquitetura, camadas, entidades, fluxo e decisões relaciona
 
 ## Vídeo da entrega
 
-> Inserir aqui o link público e clicável do vídeo da entrega antes da submissão final.
-
-Formato esperado:
 
 ```text
 Link do vídeo: https://...

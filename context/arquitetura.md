@@ -1,439 +1,288 @@
 # Arquitetura da API — Oficina
 
-API .NET organizada em camadas, com separação clara entre apresentação, aplicação, domínio e infraestrutura.
+## 1. Visão geral
 
----
+A Oficina API é uma aplicação monolítica em camadas, desenvolvida em C# com ASP.NET Core Web API e .NET 10. A solução gerencia clientes, usuários, veículos, itens de catálogo, ordens de serviço, orçamentos, estoque, históricos e relatórios.
 
-## Entidades
+O fluxo principal é:
 
-- Cliente
-- ItemCatalogo
-- OrdemServico
-- Veiculo
-
----
-
-## Visão geral das camadas
-
-```
-Oficina.Api
-Oficina.Application
-Oficina.Domain
-Oficina.Infra.Data
-Oficina.Infra.Data.Postgres
-```
-
-### Dependências entre projetos
-
-```
-Oficina.Api
-    ├── Oficina.Application
-    │       └── Oficina.Domain
-    │
-    ├── Oficina.Infra.Data
-    │       └── Oficina.Domain
-    │
-    └── Oficina.Infra.Data.Postgres
-            └── Oficina.Infra.Data
-```
-
-- `Domain` não depende de nenhum outro projeto.
-- `Application` depende apenas de `Domain`.
-- `Infra.Data` implementa as interfaces definidas em `Domain`.
-- `Infra.Data.Postgres` contém somente as migrations.
-- `Api` é a raiz de composição: registra tudo no DI.
-
----
-
-## 1. Oficina.Api
-
-Ponto de entrada da aplicação. Contém apenas configurações globais.
-
-```
-Oficina.Api/
-├── Program.cs
-├── Startup.cs
-├── appsettings.json
-├── appsettings.Development.json
-└── Properties/
-    └── launchSettings.json
-```
-
-**Responsabilidades**
-
-- `Program` / `Startup`: configuração global (DI, CORS, Swagger, autenticação, middlewares, logging).
-- Registro do `DbContext`, repositories e services.
-- Configuração do provider Postgres e do assembly de migrations.
-- Nenhuma regra de negócio e nenhuma controller.
-
----
-
-## 2. Oficina.Application
-
-Camada de entrada HTTP e de regras de negócio.
-
-```
-Oficina.Application/
-├── Controllers/
-│   ├── ClienteController.cs
-│   ├── ItemCatalogoController.cs
-│   ├── OrdemServicoController.cs
-│   └── VeiculoController.cs
-│
-├── Requests/
-│   ├── Cliente/
-│   │   ├── CriarClienteRequest.cs
-│   │   └── AtualizarClienteRequest.cs
-│   │
-│   ├── ItemCatalogo/
-│   │   ├── CriarItemCatalogoRequest.cs
-│   │   └── AtualizarItemCatalogoRequest.cs
-│   │
-│   ├── OrdemServico/
-│   │   ├── CriarOrdemServicoRequest.cs
-│   │   └── AtualizarOrdemServicoRequest.cs
-│   │
-│   └── Veiculo/
-│       ├── CriarVeiculoRequest.cs
-│       └── AtualizarVeiculoRequest.cs
-│
-└── Services/
-    ├── ClienteService.cs
-    ├── ItemCatalogoService.cs
-    ├── OrdemServicoService.cs
-    └── VeiculoService.cs
-```
-
-**Regras**
-
-- Uma controller por entidade.
-- Um objeto de request por arquivo.
-- Controllers são finas: recebem o request, chamam a service e devolvem o resultado.
-- As services concentram a lógica e orquestram os repositories.
-
----
-
-## 3. Oficina.Domain
-
-Núcleo do sistema. Não conhece infraestrutura nem framework web.
-
-```
-Oficina.Domain/
-├── Entities/
-│   ├── Cliente.cs
-│   ├── ItemCatalogo.cs
-│   ├── OrdemServico.cs
-│   └── Veiculo.cs
-│
-├── Enums/
-│   └── StatusOrdemServico.cs
-│
-├── Dtos/
-│   ├── ClienteDto.cs
-│   ├── ItemCatalogoDto.cs
-│   ├── OrdemServicoDto.cs
-│   └── VeiculoDto.cs
-│
-└── Interfaces/
-    ├── Repositories/
-    │   ├── IClienteRepository.cs
-    │   ├── IItemCatalogoRepository.cs
-    │   ├── IOrdemServicoRepository.cs
-    │   └── IVeiculoRepository.cs
-    │
-    └── Services/
-        ├── IClienteService.cs
-        ├── IItemCatalogoService.cs
-        ├── IOrdemServicoService.cs
-        └── IVeiculoService.cs
-```
-
-**Contém**
-
-- Entidades
-- Enums
-- DTOs (retorno das consultas)
-- Interfaces de repositories e services
-
----
-
-## 4. Oficina.Infra.Data
-
-Acesso a dados: contexto, mapeamentos e repositories.
-
-```
-Oficina.Infra.Data/
-├── Context/
-│   └── OficinaDbContext.cs
-│
-├── Mappings/
-│   ├── ClienteMap.cs
-│   ├── ItemCatalogoMap.cs
-│   ├── OrdemServicoMap.cs
-│   └── VeiculoMap.cs
-│
-└── Repositories/
-    ├── ClienteRepository.cs
-    ├── ItemCatalogoRepository.cs
-    ├── OrdemServicoRepository.cs
-    └── VeiculoRepository.cs
-```
-
-**Regras**
-
-- Um mapeamento por arquivo, implementando `IEntityTypeConfiguration<T>`.
-- Um repository por entidade, implementando a interface definida em `Domain`.
-- O `DbContext` aplica os mapeamentos via `ApplyConfigurationsFromAssembly`.
-
----
-
-## 5. Oficina.Infra.Data.Postgres
-
-Projeto dedicado somente às migrations.
-
-```
-Oficina.Infra.Data.Postgres/
-└── Migrations/
-    ├── 20261101000000_Inicial.cs
-    ├── 20261101000000_Inicial.Designer.cs
-    └── OficinaDbContextModelSnapshot.cs
-```
-
-**Regras**
-
-- Nenhum código além das migrations geradas pelo EF Core.
-- Configurado em `Program` com `MigrationsAssembly("Oficina.Infra.Data.Postgres")`.
-
----
-
-## Fluxo geral da requisição
-
-```
+```text
 Cliente HTTP
-    │
-    ▼
+    ↓
 Controller
-    │
-    ▼
+    ↓
 Service
-    │
-    ▼
-Repository
-    │
-    ▼
+    ↓
+Repository / DbContext
+    ↓
+Entity Framework Core
+    ↓
 PostgreSQL
 ```
 
-O retorno faz o caminho inverso: Repository → Service → Controller → resposta HTTP.
+As regras de negócio ficam principalmente no domínio e nos services. Os controllers são responsáveis por receber requisições, encaminhar chamadas e produzir respostas HTTP.
 
-### Regras do fluxo
+## 2. Projetos e dependências
 
-1. A controller nunca acessa o repository diretamente; sempre passa pela service.
-2. A service trabalha a lógica (validações, regras, conversões) antes de chamar o repository.
-3. Operações GET sempre retornam DTOs, nunca entidades.
-4. Requests (entrada) ficam em `Application`; DTOs (saída) ficam em `Domain`.
-5. Todo `Id` de entidade é sempre `Guid`.
-6. Toda criação (POST) retorna o `Guid` do registro criado.
-7. Todo update (PUT) retorna o `Guid` do registro atualizado.
-
-### Padrão de retorno
-
-| Operação | Verbo | Retorno |
-|---|---|---|
-| Consulta | GET | DTO (ou lista de DTOs) |
-| Criação | POST | `Guid` do registro criado |
-| Atualização | PUT | `Guid` do registro atualizado |
-
----
-
-## Exemplo de fluxo (Cliente)
-
-### Controller
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class ClienteController : ControllerBase
-{
-    private readonly IClienteService _clienteService;
-
-    public ClienteController(IClienteService clienteService)
-    {
-        _clienteService = clienteService;
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ClienteDto>> ObterPorId(Guid id)
-    {
-        var cliente = await _clienteService.ObterPorIdAsync(id);
-
-        if (cliente is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(cliente);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Guid>> Criar(CriarClienteRequest request)
-    {
-        var id = await _clienteService.CriarAsync(request);
-
-        return Ok(id);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Guid>> Atualizar(Guid id, AtualizarClienteRequest request)
-    {
-        var idAtualizado = await _clienteService.AtualizarAsync(id, request);
-
-        return Ok(idAtualizado);
-    }
-}
+```text
+Oficina.Api
+└── Oficina.Application
+    ├── Oficina.Domain
+    ├── Oficina.Infra.Data
+    │   └── Oficina.Domain
+    └── Oficina.Infra.Data.Postgres
+        └── Oficina.Infra.Data
 ```
 
-### Service
+### Oficina.Api
 
-```csharp
-public class ClienteService : IClienteService
-{
-    private readonly IClienteRepository _clienteRepository;
+Ponto de entrada e composição da aplicação. Contém:
 
-    public ClienteService(IClienteRepository clienteRepository)
-    {
-        _clienteRepository = clienteRepository;
-    }
+- `Program.cs` e `Startup.cs`;
+- configurações de autenticação, CORS, banco e Swagger;
+- registro de controllers, services e repositories;
+- middleware de exceções;
+- execução automática das migrations no início da aplicação.
 
-    public async Task<ClienteDto?> ObterPorIdAsync(Guid id)
-    {
-        var cliente = await _clienteRepository.ObterPorIdAsync(id);
+### Oficina.Application
 
-        if (cliente is null)
-        {
-            return null;
-        }
+Camada de aplicação e entrada HTTP. Contém:
 
-        return new ClienteDto
-        {
-            Id = cliente.Id,
-            Nome = cliente.Nome
-        };
-    }
+- controllers;
+- requests de entrada;
+- services;
+- orquestração de casos de uso;
+- conversão entre entidades e DTOs.
 
-    public async Task<Guid> CriarAsync(CriarClienteRequest request)
-    {
-        var cliente = new Cliente
-        {
-            Id = Guid.NewGuid(),
-            Nome = request.Nome
-        };
+### Oficina.Domain
 
-        await _clienteRepository.AdicionarAsync(cliente);
+Núcleo do negócio, sem dependência de infraestrutura ou de HTTP. Contém:
 
-        return cliente.Id;
-    }
+- entidades e regras de domínio;
+- enums;
+- DTOs;
+- interfaces de services e repositories;
+- exceções e objetos comuns do domínio.
 
-    public async Task<Guid> AtualizarAsync(Guid id, AtualizarClienteRequest request)
-    {
-        var cliente = await _clienteRepository.ObterPorIdAsync(id);
+### Oficina.Infra.Data
 
-        if (cliente is null)
-        {
-            throw new KeyNotFoundException("Cliente não encontrado.");
-        }
+Implementa o acesso a dados:
 
-        cliente.Nome = request.Nome;
+- `OficinaDbContext`;
+- mapeamentos Fluent API;
+- filtros globais para exclusão lógica;
+- repositories com consultas LINQ to Entities;
+- consultas de ordens, orçamentos, itens e históricos.
 
-        await _clienteRepository.AtualizarAsync(cliente);
+### Oficina.Infra.Data.Postgres
 
-        return cliente.Id;
-    }
-}
+Contém o provider PostgreSQL, o assembly de migrations e o snapshot do modelo do Entity Framework Core.
+
+## 3. Controllers e endpoints
+
+### AuthController
+
+Rota base: `/api/auth`
+
+- `POST /usuarios`: cadastra usuários e, para o perfil Cliente, cria o cliente vinculado.
+- `POST /login`: valida credenciais e retorna token JWT.
+
+### ClienteController
+
+Rota base: `/api/clientes`
+
+- `GET /`: lista clientes com busca e paginação.
+- `GET /{id}`: obtém um cliente.
+- `POST /`: cria cliente.
+- `PUT /{id}`: atualiza cliente.
+- `DELETE /{id}`: realiza exclusão lógica.
+
+### VeiculoController
+
+Rota base: `/api/veiculos`
+
+- `GET /`: lista veículos.
+- `GET /{id}`: obtém um veículo.
+- `POST /`: cria veículo.
+- `PUT /{id}`: atualiza veículo.
+- `DELETE /{id}`: realiza exclusão lógica.
+
+### ItemCatalogoController
+
+Rota base: `/api/itens-catalogo`
+
+- `GET /`: lista serviços e peças.
+- `GET /{id}`: obtém item do catálogo.
+- `GET /{id}/historico`: consulta o histórico do item.
+- `POST /`: cria item e registra auditoria.
+- `PUT /{id}`: atualiza item e registra auditoria.
+- `POST /{id}/estoque`: adiciona quantidade ao estoque.
+- `DELETE /{id}`: realiza exclusão lógica e registra auditoria.
+
+### OrdemServicoController
+
+Rota base: `/api/ordens-servico`
+
+- `GET /`: lista ordens para Admin e Atendente.
+- `GET /{id}`: obtém a ordem, incluindo os itens utilizados.
+- `POST /`: cria ordem simples ou ordem com orçamento, conforme autenticação e conteúdo da requisição.
+- `GET /minhas`: lista as ordens do cliente autenticado.
+- `GET /por-cliente`: pesquisa ordens pelo nome do cliente.
+- `PATCH /{id}/status`: altera o status e registra histórico.
+- `GET /{id}/historico`: consulta histórico da ordem.
+- `GET /{id}/orcamento`: consulta orçamento da ordem.
+- `POST /{id}/orcamento/decisao`: aprova ou recusa orçamento.
+- `PUT /{id}`: atualiza dados da ordem.
+- `DELETE /{id}`: realiza exclusão lógica.
+
+### RelatorioController
+
+Rota base: `/api/relatorios`
+
+- `GET /ordens-servico/tempo`: duração das ordens até finalização ou entrega.
+- `GET /orcamentos`: duração dos orçamentos e resumo de aprovados, recusados e pendentes.
+- `GET /ordens-servico/status`: quantidade de ordens por status.
+- `GET /estoque`: itens com menor quantidade disponível.
+
+Todos os endpoints protegidos utilizam autorização baseada em roles: `Admin`, `Atendente` e `Cliente`.
+
+## 4. Entidades e regras de negócio
+
+### Usuário e autenticação
+
+- E-mails são normalizados para minúsculas e sem espaços externos.
+- Não são permitidos usuários duplicados pelo e-mail.
+- Clientes precisam informar CPF ou CNPJ válido.
+- Senhas são armazenadas com hash.
+- O login retorna JWT com o perfil do usuário.
+
+### Cliente
+
+- O cliente deve estar vinculado a um usuário.
+- Documento é validado como CPF ou CNPJ.
+- A exclusão é lógica por meio de `DataExclusao`.
+
+### Veículo
+
+- A placa é validada e armazenada em maiúsculas.
+- O veículo pertence a um cliente.
+
+### Item de catálogo e estoque
+
+- Um item pode representar serviço ou peça.
+- A quantidade nunca pode ficar negativa.
+- A criação, atualização, exclusão e movimentação de estoque geram registros em `auditoria.historico_itens_catalogo`.
+
+### Ordem de serviço
+
+- Uma ordem pertence a um cliente e a um veículo.
+- Ao criar uma ordem com orçamento, os itens são verificados no estoque.
+- Os itens utilizados são baixados do estoque dentro de uma transação.
+- A criação registra o primeiro evento do histórico da ordem.
+- As transições de status são controladas pela entidade `OrdemServico`.
+- O cliente consulta apenas as próprias ordens, resolvendo o `ClienteId` a partir do usuário autenticado.
+
+### Orçamento
+
+- O orçamento inicia como `Pendente`.
+- Somente o cliente proprietário pode decidir.
+- As decisões válidas são `Aprovado` e `Recusado`.
+- Ao aprovar, a ordem avança para `EmExecucao`.
+- Ao recusar, os itens retornam ao estoque.
+- A decisão e a reposição de estoque ocorrem em transação.
+
+### Exclusão lógica
+
+Entidades de negócio que herdam de `EntidadeBase` são excluídas logicamente. Consultas normais filtram registros com `DataExclusao == null`, mantendo o histórico e evitando remoção física indevida.
+
+## 5. Status da ordem de serviço
+
+As transições permitidas são:
+
+```text
+Recebida → EmDiagnostico
+Recebida → AguardandoAprovacao
+EmDiagnostico → AguardandoAprovacao
+AguardandoAprovacao → EmExecucao
+AguardandoAprovacao → Recebida   (orçamento recusado)
+EmExecucao → Finalizada
+Finalizada → Entregue
 ```
 
-### Repository
+Transições inválidas ou repetição do mesmo status geram conflito de negócio.
 
-```csharp
-public class ClienteRepository : IClienteRepository
-{
-    private readonly OficinaDbContext _context;
+## 6. Persistência e auditoria
 
-    public ClienteRepository(OficinaDbContext context)
-    {
-        _context = context;
-    }
+O PostgreSQL é acessado pelo Entity Framework Core com Npgsql. As migrations ficam em `Oficina.Infra.Data.Postgres/Migrations` e são aplicadas automaticamente na inicialização da API.
 
-    public async Task<Cliente?> ObterPorIdAsync(Guid id)
-    {
-        return await _context.Clientes
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
+Principais tabelas e agrupamentos:
 
-    public async Task AdicionarAsync(Cliente cliente)
-    {
-        await _context.Clientes.AddAsync(cliente);
-        await _context.SaveChangesAsync();
-    }
+- entidades operacionais no schema `oficina`;
+- histórico de status das ordens no schema `oficina`;
+- histórico de itens do catálogo no schema `auditoria`;
+- tabela de controle das migrations do EF Core.
 
-    public async Task AtualizarAsync(Cliente cliente)
-    {
-        _context.Clientes.Update(cliente);
-        await _context.SaveChangesAsync();
-    }
-}
+O histórico de itens guarda o snapshot do nome, preço, tipo, quantidade e ação realizada, permitindo rastrear entradas e saídas de estoque.
+
+## 7. Autenticação e autorização
+
+O sistema usa JWT Bearer. Os perfis são:
+
+```text
+Admin     = 1
+Atendente = 2
+Cliente   = 3
 ```
 
----
+Após o login, o token deve ser enviado em:
 
-## Resumo por camada
-
-| Projeto | Conteúdo | Regra principal |
-|---|---|---|
-| `Oficina.Api` | Program/Startup, configurações globais | Sem regra de negócio |
-| `Oficina.Application` | Controllers, Requests, Services | 1 controller por entidade, 1 request por arquivo |
-| `Oficina.Domain` | Entities, Enums, Dtos, Interfaces | Sem dependências externas |
-| `Oficina.Infra.Data` | DbContext, Mappings, Repositories | 1 mapping e 1 repository por entidade |
-| `Oficina.Infra.Data.Postgres` | Migrations | Somente migrations |
-
-## 6. Testes automatizados
-
-O projeto possui uma camada de testes unitários em `tests/Oficina.Application.Tests`, utilizando NUnit e Moq.
-
-Todo endpoint da aplicação deve possuir testes unitários para o caminho de sucesso e para os cenários de falha relevantes, como recurso não encontrado, credenciais inválidas e conflitos de negócio. Os testes de controller são organizados em um arquivo por controller e validam o resultado HTTP da action, utilizando mocks das services para manter o isolamento da camada de apresentação. As regras de negócio das services, como cadastro duplicado e autenticação, também devem ser testadas diretamente.
-
-```
-tests/Oficina.Application.Tests/
-└── Controllers/
-    ├── AuthControllerTests.cs
-    ├── ClienteControllerTests.cs
-    ├── ItemCatalogoControllerTests.cs
-    ├── OrdemServicoControllerTests.cs
-    └── VeiculoControllerTests.cs
+```text
+Authorization: Bearer {token}
 ```
 
-Além dos testes dos Controllers, somente deverão ser criados testes específicos para Services e Repositories quando a cobertura dos testes dos Controllers não for suficiente para garantir o comportamento esperado, ou quando houver métodos auxiliares compartilhados e utilizados em diferentes partes da aplicação.
+As credenciais e o fluxo de demonstração estão documentados em `postman/Oficina.postman_environment.json` e `postman/Oficina.postman_collection.json`.
 
-Evitando duplicar testes que já validam o mesmo comportamento por meio dos Controllers. Priorizando testes que agreguem cobertura e valor real à aplicação.
+## 8. Tratamento de erros
 
-Para executar os testes:
+A API utiliza tratamento global de exceções e Problem Details. As principais conversões são:
 
-```bash
-dotnet test tests/Oficina.Application.Tests/Oficina.Application.Tests.csproj
+| Exceção ou situação | HTTP |
+|---|---:|
+| Requisição inválida ou argumento inválido | 400 |
+| Recurso não encontrado | 404 |
+| Conflito de negócio ou acesso indevido | 409 |
+| Usuário não autenticado | 401 |
+| Usuário sem permissão | 403 |
+| Erro não tratado | 500 |
+
+## 9. Testes automatizados
+
+Os testes ficam em `tests/Oficina.Application.Tests`, utilizando NUnit e Moq.
+
+Há testes de controllers para autenticação, clientes, itens de catálogo, ordens, relatórios e veículos. Também existem testes específicos para regras de relatório e autorização do histórico de ordens.
+
+Os cenários cobertos incluem:
+
+- respostas HTTP de sucesso e erro;
+- autenticação e autorização;
+- recursos inexistentes;
+- cadastro de cliente vinculado a usuário;
+- criação de ordem autenticada com orçamento;
+- decisão de orçamento;
+- histórico de ordens e itens;
+- cálculo e agrupamento dos relatórios;
+- validação de períodos e limites.
+
+Execução:
+
+```powershell
+dotnet test Oficina.sln
 ```
 
-Postman:
+## 10. Documentação complementar
 
-Também é necessário atualizar e organizar os arquivos do Postman para contemplar todos os endpoints e fluxos da aplicação.
-
-Separar as requisições por entidades, mantendo uma organização clara e padronizada.
-
-Criar pastas específicas para os fluxos de negócio, duplicando as requisições necessárias para representar cada fluxo de forma independente.
-
-Manter o padrão de organização com uma pasta para o fluxo principal de cada entidade e pastas adicionais para os demais fluxos relacionados.
-
-Garantir que todos os endpoints estejam contemplados, incluindo operações de criação, consulta, atualização e exclusão, quando aplicáveis.
-
-Configurar as variáveis de ambiente (Environments) para que sejam atualizadas automaticamente conforme os retornos das requisições, utilizando os IDs e demais informações necessárias para executar as próximas etapas dos fluxos.
-
-Garantir que os fluxos possam ser executados sequencialmente, sem necessidade de preencher manualmente os IDs retornados pelas operações anteriores.
+- README principal: [README.md](../README.md)
+- Requisitos e critérios da entrega: [context.md](./context.md)
+- Documentação DDD e arquitetura: este arquivo
+- Collection Postman: [Oficina.postman_collection.json](../postman/Oficina.postman_collection.json)
+- Collection de relatórios: [Relatorios.postman_collection.json](../postman/Relatorios.postman_collection.json)
