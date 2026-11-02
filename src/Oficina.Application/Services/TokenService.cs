@@ -20,8 +20,8 @@ public sealed class TokenService(IConfiguration configuration, ITokenRepository 
         {
             new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, usuario.Email),
-            new Claim(ClaimTypes.Name, usuario.Nome)
-            ,new Claim(ClaimTypes.Role, usuario.Role.ToString())
+            new Claim(ClaimTypes.Name, usuario.Nome),
+            new Claim(ClaimTypes.Role, usuario.Role.ToString())
         };
 
         var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key));

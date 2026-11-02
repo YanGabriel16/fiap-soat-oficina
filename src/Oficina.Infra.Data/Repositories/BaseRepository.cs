@@ -9,20 +9,31 @@ public abstract class BaseRepository<TEntity>(OficinaDbContext db) : IBaseReposi
 {
     protected OficinaDbContext Db { get; } = db;
 
-    protected virtual IQueryable<TEntity> AplicarFiltro(IQueryable<TEntity> query, string? term) => query;
+    protected virtual IQueryable<TEntity> AplicarFiltro(IQueryable<TEntity> query, string? term) 
+        => from entidade in query
+           select entidade;
 
-    protected virtual IQueryable<TEntity> AplicarOrdenacao(IQueryable<TEntity> query) => query.OrderBy(x => x.Id);
+    protected virtual IQueryable<TEntity> AplicarOrdenacao(IQueryable<TEntity> query) 
+        => from entidade in query
+           orderby entidade.Id
+           select entidade;
 
-    public virtual Task<TEntity?> ObterPorIdAsync(Guid id, CancellationToken ct) =>
-        Db.Set<TEntity>().SingleOrDefaultAsync(x => x.Id == id && !x.Excluida, ct);
+    public virtual Task<TEntity?> ObterPorIdAsync(Guid id, CancellationToken ct) 
+        => (from entidade in Db.Set<TEntity>()
+            where entidade.Id == id && entidade.DataExclusao == null
+            select entidade).SingleOrDefaultAsync(ct);
 
     public virtual async Task<(IReadOnlyList<TEntity> Itens, int Total)> ListarAsync(
         string? term, int offset, int limit, CancellationToken ct)
     {
-        var query = Db.Set<TEntity>().AsNoTracking().Where(x => !x.Excluida);
+        var query = from entidade in Db.Set<TEntity>().AsNoTracking()
+                    where entidade.DataExclusao == null
+                    select entidade;
+        
         query = AplicarFiltro(query, term);
         var total = await query.CountAsync(ct);
         var itens = await AplicarOrdenacao(query).Skip(offset).Take(limit).ToListAsync(ct);
+        
         return (itens, total);
     }
 

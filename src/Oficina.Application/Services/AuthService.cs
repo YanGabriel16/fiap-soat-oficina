@@ -24,13 +24,21 @@ public sealed class AuthService(
         if (await repository.ExistePorEmailAsync(email, ct))
             throw new ConflitoException("Já existe um usuário cadastrado com este e-mail.");
 
-        if (role == RoleUsuario.Cliente && string.IsNullOrWhiteSpace(documento)) throw new ArgumentException("Documento é obrigatório para clientes.");
-        if (documento is not null && !Validadores.Documento(documento)) throw new ArgumentException("CPF ou CNPJ inválido.");
+        if (role == RoleUsuario.Cliente && string.IsNullOrWhiteSpace(documento)) 
+            throw new ArgumentException("Documento é obrigatório para clientes.");
+        
+        if (documento is not null && !Validadores.Documento(documento)) 
+            throw new ArgumentException("CPF ou CNPJ inválido.");
+        
         var usuario = new Usuario(nome.Trim(), email, string.Empty, role);
+        
         usuario.AtualizarSenha(passwordHasher.HashPassword(usuario, senha));
+        
         await repository.AdicionarAsync(usuario, ct);
+        
         if (role == RoleUsuario.Cliente)
             await clienteRepository.AdicionarAsync(new Cliente(nome.Trim(), documento!, usuario.Id), ct);
+        
         return usuario.Id;
     }
 

@@ -20,20 +20,22 @@ public abstract class BaseService<TEntity, TDto, TRepository>(TRepository reposi
         return new(resultado.Itens.Select(Map).ToList(), offset, limit, resultado.Total);
     }
 
-    public async Task<TDto?> ObterPorIdAsync(Guid id, CancellationToken ct) =>
-        (await Repository.ObterPorIdAsync(id, ct)) is { } entidade ? Map(entidade) : default;
+    public virtual async Task<TDto?> ObterPorIdAsync(Guid id, CancellationToken ct) 
+        => (await Repository.ObterPorIdAsync(id, ct)) is { } entidade ? Map(entidade) : default;
 
     public async Task<bool> ExcluirAsync(Guid id, CancellationToken ct)
     {
         var entidade = await Repository.ObterPorIdAsync(id, ct);
+        
         if (entidade is null)
             return false;
 
         entidade.Excluir();
         await Repository.ExcluirAsync(entidade, ct);
+        
         return true;
     }
 
-    private static (int Offset, int Limit) Normalizar(int offset, int limit) =>
-        (Math.Max(0, offset), Math.Clamp(limit <= 0 ? 20 : limit, 1, 100));
+    private static (int Offset, int Limit) Normalizar(int offset, int limit) 
+        => (Math.Max(0, offset), Math.Clamp(limit <= 0 ? 20 : limit, 1, 100));
 }

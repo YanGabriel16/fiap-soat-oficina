@@ -11,13 +11,16 @@ public sealed class ItemCatalogoService(IItemCatalogoRepository repository) : Ba
     {
         var e = new ItemCatalogo(nome, preco, tipo, quantidadeEstoque);
         await Repository.AdicionarAsync(e, ct);
+        
         return e.Id;
     }
     public async Task<Guid> AtualizarAsync(Guid id, string nome, decimal preco, TipoItemCatalogo tipo, int quantidadeEstoque, CancellationToken ct)
     {
         var e = await Repository.ObterPorIdAsync(id, ct) ?? throw new KeyNotFoundException("Item de catálogo não encontrado.");
+        
         e.Atualizar(nome, preco, tipo, quantidadeEstoque);
         await Repository.AtualizarAsync(e, ct);
+        
         return e.Id;
     }
     protected override ItemCatalogoDto Map(ItemCatalogo e)

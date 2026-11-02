@@ -4,9 +4,20 @@ using Oficina.Infra.Data.Context;
 namespace Oficina.Infra.Data.Repositories;
 public sealed class ClienteRepository(OficinaDbContext db) : BaseRepository<Cliente>(db), IClienteRepository
 {
-    public Task<Cliente?> ObterPorUsuarioAsync(Guid usuarioId, CancellationToken ct) => Db.Clientes.SingleOrDefaultAsync(x => x.UsuarioId == usuarioId, ct);
+    public Task<Cliente?> ObterPorUsuarioAsync(Guid usuarioId, CancellationToken ct)
+        => (from cliente in Db.Clientes
+            where cliente.UsuarioId == usuarioId
+            select cliente).SingleOrDefaultAsync(ct);
+
     protected override IQueryable<Cliente> AplicarFiltro(IQueryable<Cliente> query, string? term) 
-        => query.Where(x => string.IsNullOrEmpty(term) || x.Nome.ToLower().Contains(term!.ToLower()) || x.Documento.Contains(term!));
+        => from cliente in query
+           where string.IsNullOrEmpty(term)
+                 || EF.Functions.Like(cliente.Nome.ToLower(), $"%{term!.ToLower()}%")
+                 || EF.Functions.Like(cliente.Documento, $"%{term!}%")
+           select cliente;
+           
     protected override IQueryable<Cliente> AplicarOrdenacao(IQueryable<Cliente> query) 
-        => query.OrderBy(x => x.Nome);
+        => from cliente in query
+           orderby cliente.Nome
+           select cliente;
 }
