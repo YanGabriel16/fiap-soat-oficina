@@ -220,6 +220,8 @@ O PostgreSQL é acessado pelo Entity Framework Core com Npgsql. As migrations fi
 Principais tabelas e agrupamentos:
 
 - entidades operacionais no schema `oficina`;
+- entidades relacionadas ao cliente ficam no schema `clientes`
+- entidades relacionadas a autenticação ficam no schema `auth`
 - histórico de status das ordens no schema `oficina`;
 - histórico de itens do catálogo no schema `auditoria`;
 - tabela de controle das migrations do EF Core.

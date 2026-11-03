@@ -109,7 +109,7 @@ classDiagram
       +decimal ValorMaoDeObra
       +decimal ValorTotal
       +StatusOrcamento Status
-      +DateTimeOffset DataDecisao
+      +DateTimeOffset? DataDecisao
       +OrdemServico OrdemServico
       +Cliente Cliente
       +ICollection~OrcamentoItem~ Itens
@@ -126,7 +126,7 @@ classDiagram
     }
     class HistoricoOrdemServico {
       +Guid OrdemServicoId
-      +StatusOrdemServico StatusAnterior
+      +StatusOrdemServico? StatusAnterior
       +StatusOrdemServico NovoStatus
       +string Observacao
       +Guid UsuarioId

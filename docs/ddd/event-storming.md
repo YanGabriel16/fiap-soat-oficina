@@ -15,11 +15,11 @@ Os eventos abaixo não são classes de eventos publicadas em um barramento. Na i
 ### Linha do tempo
 
 ```text
-Atendente
+Admin ou Atendente
   → CriarOrdemComOrcamento
-  → OrdemServicoCriada
   → ItensDoCatalogoVerificados
   → EstoqueDosItensRemovido
+  → OrdemServicoCriada
   → OrcamentoCriado
   → HistoricoDaOrdemRegistrado
 ```
@@ -28,25 +28,24 @@ Atendente
 
 | Tipo | Elemento | Implementação real |
 |---|---|---|
-| Ator | Atendente | Token com `RoleUsuario.Atendente` |
+| Ator | Admin ou Atendente | Token com `RoleUsuario.Admin` ou `RoleUsuario.Atendente` |
 | Comando | Criar ordem com orçamento | `POST /api/ordens-servico` autenticado |
 | Política | Validar item existente | `OrdemServicoService.CriarComOrcamentoAsync` |
 | Política | Impedir quantidade maior que o estoque | `ItemCatalogo.RemoverEstoque` |
 | Evento | Ordem criada | `OrdemServico` + histórico inicial |
 | Evento | Estoque removido | `HistoricoItemCatalogo` com `EstoqueRemovido` |
 | Evento | Orçamento criado | `Orcamento` e `OrcamentoItem` |
-| Política | Persistir tudo atomicamente | Transação do `OficinaDbContext` |
 
 ### Resultado
 
-A ordem é criada com os itens, preço unitário do momento da criação, valor de mão de obra e valor total. Se qualquer item não existir ou não possuir estoque suficiente, a transação não é concluída.
+A ordem é montada com os itens, preço unitário do momento da criação, valor de mão de obra e valor total somente depois que todos os itens foram encontrados e os estoques validados. Se qualquer item não existir ou não possuir estoque suficiente, a transação não é concluída.
 
 ## Fluxo 2 — Acompanhamento da Ordem de Serviço
 
 ### Linha do tempo
 
 ```text
-Atendente
+Admin ou Atendente
   → AlterarStatus
   → StatusDaOrdemAlterado
   → HistoricoDaOrdemRegistrado
@@ -111,7 +110,7 @@ Orçamento recusado
 | Política | Quantidade removida deve ser positiva e disponível | `ItemCatalogo.RemoverEstoque` |
 | Evento | Estoque adicionado | `AcaoHistoricoItemCatalogo.EstoqueAdicionado` |
 | Evento | Estoque removido | `AcaoHistoricoItemCatalogo.EstoqueRemovido` |
-| Evento | Estoque reposto | Reposição na recusa do orçamento |
+| Evento | Estoque reposto | Reposição na recusa do orçamento, dentro da transação de `OrcamentoService.DecidirAsync` |
 
 ## Atores
 
@@ -122,4 +121,4 @@ Orçamento recusado
 
 ## Limitações do modelo atual
 
-Os eventos são persistidos como histórico, mas não há event bus, integração assíncrona, sagas, publicação externa ou projeções CQRS. Esses itens são possibilidades de evolução, não comportamentos existentes.
+Os eventos são persistidos como histórico, mas não há event bus, integração assíncrona, sagas, publicação externa ou projeções CQRS. A criação da OS com orçamento e a decisão do orçamento usam transações explícitas; o CRUD administrativo do catálogo registra cada alteração por operações de repositório separadas. Esses itens são possibilidades de evolução, não comportamentos existentes.
