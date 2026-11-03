@@ -5,7 +5,7 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5080" },
+    { "key": "baseUrl", "value": "http://localhost:8080" },
     { "key": "adminToken", "value": "cole-o-token-do-admin-aqui" },
     { "key": "itemCatalogoId", "value": "informe-o-id-do-item-aqui" }
   ],
