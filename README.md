@@ -219,8 +219,6 @@ context/
 A documentação de arquitetura, camadas, entidades, fluxo e decisões relacionadas ao domínio está em [docs/ddd/README.md](./docs/ddd/README.md), com a arquitetura geral em [context/arquitetura.md](./context/arquitetura.md).
 
 ## Vídeo da entrega
+### Apresentação do Projeto
 
-
-```text
-Link do vídeo: https://...
-```
+[▶️ Clique aqui para assistir à apresentação no YouTube](https://youtu.be/o0hjxCUJ5KE)
