@@ -13,9 +13,8 @@ public sealed class AuthController(IAuthService service) : ApiControllerBase
     public Task<IActionResult> Cadastrar([FromBody] CadastrarUsuarioRequest request, CancellationToken ct) 
         => ExecutarAsync(async () =>
         {
-            var id = request.Role == Oficina.Domain.Enums.RoleUsuario.Cliente && string.IsNullOrWhiteSpace(request.Documento)
-                ? await service.CadastrarAsync(request.Nome, request.Email, request.Senha, ct)
-                : await service.CadastrarAsync(request.Nome, request.Email, request.Senha, request.Role, request.Documento, ct);
+            var id = await service.CadastrarAsync(
+                request.Nome, request.Email, request.Senha, request.Role, request.Documento, request.Telefone, ct);
             return StatusCode(StatusCodes.Status201Created, id);
         });
 

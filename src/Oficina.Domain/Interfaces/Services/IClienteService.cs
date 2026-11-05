@@ -3,7 +3,6 @@ namespace Oficina.Domain.Interfaces.Services;
 
 public interface IClienteService : IBaseService<ClienteDto>
 {
-    Task<Guid> CriarAsync(string nome, string documento, CancellationToken ct); 
-    Task<Guid> CriarAsync(string nome, string documento, Guid usuarioId, CancellationToken ct);
-    Task<Guid> AtualizarAsync(Guid id, string nome, string documento, CancellationToken ct);
+    Task<Guid> CriarAsync(string nome, string documento, Guid? usuarioId, string? telefone, CancellationToken ct);
+    Task<Guid> AtualizarAsync(Guid id, string nome, string documento, string? telefone, CancellationToken ct);
 }

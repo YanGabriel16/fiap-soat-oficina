@@ -7,7 +7,7 @@ public sealed class AuthControllerTests
     {
         var service = new Mock<IAuthService>();
         var id = Guid.NewGuid();
-        service.Setup(x => x.CadastrarAsync("Ana", "ana@teste.com", "senha-segura", It.IsAny<CancellationToken>()))
+        service.Setup(x => x.CadastrarAsync("Ana", "ana@teste.com", "senha-segura", RoleUsuario.Cliente, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(id);
         var controller = new AuthController(service.Object);
 
@@ -55,7 +55,7 @@ public sealed class AuthControllerTests
     public async Task Cadastrar_QuandoUsuarioJaExiste_DeveRetornarConflict()
     {
         var service = new Mock<IAuthService>();
-        service.Setup(x => x.CadastrarAsync("Ana", "ana@teste.com", "senha-segura", It.IsAny<CancellationToken>()))
+        service.Setup(x => x.CadastrarAsync("Ana", "ana@teste.com", "senha-segura", RoleUsuario.Cliente, null, null, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ConflitoException("Já existe um usuário cadastrado com este e-mail."));
         var controller = new AuthController(service.Object)
         {

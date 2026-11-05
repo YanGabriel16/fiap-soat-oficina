@@ -9,6 +9,11 @@ public sealed class ClienteRepository(OficinaDbContext db) : BaseRepository<Clie
             where cliente.UsuarioId == usuarioId
             select cliente).SingleOrDefaultAsync(ct);
 
+    public Task<Cliente?> ObterDetalhadoAsync(Guid id, CancellationToken ct)
+        => Db.Clientes
+            .Include(cliente => cliente.Usuario)
+            .SingleOrDefaultAsync(cliente => cliente.Id == id, ct);
+
     protected override IQueryable<Cliente> AplicarFiltro(IQueryable<Cliente> query, string? term) 
         => from cliente in query
            where string.IsNullOrEmpty(term)

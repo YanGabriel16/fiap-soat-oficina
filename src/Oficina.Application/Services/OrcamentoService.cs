@@ -7,7 +7,13 @@ using Oficina.Domain.Interfaces.Services;
 
 namespace Oficina.Application.Services;
 
-public sealed class OrcamentoService(IOrcamentoRepository repository, IOrdemServicoRepository ordemRepository, IClienteRepository clienteRepository, IItemCatalogoRepository itemRepository, Oficina.Infra.Data.Context.OficinaDbContext db) : IOrcamentoService
+public sealed class OrcamentoService(
+    IOrcamentoRepository repository,
+    IOrdemServicoRepository ordemRepository,
+    IClienteRepository clienteRepository,
+    IItemCatalogoRepository itemRepository,
+    Oficina.Infra.Data.Context.OficinaDbContext db,
+    INotificationQueue notificationQueue) : IOrcamentoService
 {
     public async Task<OrcamentoDto?> ObterPorOrdemAsync(Guid ordemServicoId, Guid? usuarioId, bool cliente, CancellationToken ct)
     {
@@ -42,15 +48,24 @@ public sealed class OrcamentoService(IOrcamentoRepository repository, IOrdemServ
             }
         }
         
-        var ordem = await ordemRepository.ObterPorIdAsync(ordemServicoId, ct) ?? throw new KeyNotFoundException("Ordem não encontrada.");
+        var ordem = await ordemRepository.ObterDetalhadaAsync(ordemServicoId, ct) ?? throw new KeyNotFoundException("Ordem não encontrada.");
         var novoStatus = decisao == StatusOrcamento.Aprovado ? StatusOrdemServico.EmExecucao : StatusOrdemServico.Recebida;
         
-        if (ordem.Status == StatusOrdemServico.AguardandoAprovacao) ordem.AlterarStatus(novoStatus);
+        var statusAlterado = ordem.Status == StatusOrdemServico.AguardandoAprovacao;
+        if (statusAlterado) ordem.AlterarStatus(novoStatus);
         
         db.HistoricosOrdensServico.Add(new HistoricoOrdemServico(ordem.Id, StatusOrdemServico.AguardandoAprovacao, novoStatus, $"Orçamento {decisao}.", usuarioId, TipoHistoricoOrdem.Orcamento));
         
         await db.SaveChangesAsync(ct);
         await transaction.CommitAsync(ct);
+
+        if (statusAlterado)
+        {
+            var mensagem = $"Olá {ordem.Cliente.Nome}, a ordem de serviço {ordem.Id} foi atualizada para o status {novoStatus}.";
+            notificationQueue.EnfileirarEmail(ordem.Cliente.Usuario.Email, "Atualização da ordem de serviço", mensagem);
+            if (!string.IsNullOrWhiteSpace(ordem.Cliente.Telefone))
+                notificationQueue.EnfileirarSms(ordem.Cliente.Telefone, $"OS {ordem.Id}: status atualizado para {novoStatus}.");
+        }
     }
 
     private static OrcamentoDto Map(Orcamento x) 

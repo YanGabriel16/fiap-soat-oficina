@@ -45,6 +45,8 @@ Documentação de arquitetura e DDD: [docs/ddd/README.md](./docs/ddd/README.md).
 - Entity Framework Core 10
 - PostgreSQL 16
 - Npgsql
+- Hangfire para processamento de tarefas em background, persistidas no PostgreSQL
+- MailKit para envio de e-mails via SMTP
 - JWT Bearer Authentication
 - Swagger/OpenAPI com Swashbuckle
 - Docker e Docker Compose
@@ -140,7 +142,14 @@ Os testes utilizam NUnit e Moq e cobrem respostas HTTP, autorização, validaç�
 Com a aplicação local:
 
 - Swagger: [http://localhost:5080/swagger](http://localhost:5080/swagger)
+- Hangfire Dashboard: [http://localhost:5080/hangfire](http://localhost:5080/hangfire)
 - Em Docker: [http://localhost:8080/swagger](http://localhost:8080/swagger)
+
+O Hangfire utiliza a connection string `DefaultConnection` e cria seu próprio schema no PostgreSQL. O dashboard permite acesso apenas a requisições locais por padrão; não o exponha publicamente sem configurar autorização apropriada.
+
+Orçamentos criados e mudanças de status enfileiram notificações por e-mail e SMS. O e-mail usa SMTP e fica desativado por padrão; configure `Email__Enabled=true`, `Email__Host`, `Email__Port`, `Email__FromAddress`, `Email__Username`, `Email__Password` e, se necessário, `Email__FromName` e `Email__UseSsl` por variáveis de ambiente ou Secret Manager. Não armazene credenciais SMTP no repositório. O telefone do cliente é opcional e pode ser informado no cadastro.
+
+O SMS está preparado para integração por `ISmsSender`, mas ainda não envia mensagens porque o provedor não foi escolhido. O envio permanece desativado (`Sms__Enabled=false`) até a implementação e o registro de um adaptador para o provedor escolhido; habilitá-lo sem esse adaptador fará os jobs falharem visivelmente no Hangfire.
 
 Também estão disponíveis exemplos de requisições no [Postman](./postman/) e no arquivo [item-catalogo.http](./item-catalogo.http), além da collection de relatórios [Relatorios.postman_collection.json](./postman/Relatorios.postman_collection.json).
 

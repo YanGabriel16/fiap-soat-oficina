@@ -26,16 +26,16 @@ public sealed class ClienteController(IClienteService service) : ApiControllerBa
 
     [HttpPost]
     public Task<IActionResult> Criar([FromBody] CriarClienteRequest request, CancellationToken ct) 
-        => ExecutarAsync(async () => Ok(request.UsuarioId.HasValue
-            ? await service.CriarAsync(request.Nome, request.Documento, request.UsuarioId.Value, ct)
-            : await service.CriarAsync(request.Nome, request.Documento, ct)));
+        => ExecutarAsync(async () => Ok(await service.CriarAsync(
+            request.Nome, request.Documento, request.UsuarioId, request.Telefone, ct)));
 
     [HttpPut("{id:guid}")]
     public Task<IActionResult> Atualizar(
         [FromRoute] Guid id,
         [FromBody] AtualizarClienteRequest request,
         CancellationToken ct) 
-        => ExecutarAsync(async () => Ok(await service.AtualizarAsync(id, request.Nome, request.Documento, ct)));
+        => ExecutarAsync(async () => Ok(await service.AtualizarAsync(
+            id, request.Nome, request.Documento, request.Telefone, ct)));
 
     [HttpDelete("{id:guid}")]
     public Task<IActionResult> Excluir([FromRoute] Guid id, CancellationToken ct) 

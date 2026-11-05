@@ -14,10 +14,7 @@ public sealed class AuthService(
     IPasswordHasher<Usuario> passwordHasher,
     ITokenService tokenService) : IAuthService
 {
-    public async Task<Guid> CadastrarAsync(string nome, string email, string senha, CancellationToken ct)
-        => await CadastrarAsync(nome, email, senha, RoleUsuario.Cliente, null, ct);
-
-    public async Task<Guid> CadastrarAsync(string nome, string email, string senha, RoleUsuario role, string? documento, CancellationToken ct)
+    public async Task<Guid> CadastrarAsync(string nome, string email, string senha, RoleUsuario role, string? documento, string? telefone, CancellationToken ct)
     {
         email = email.Trim().ToLowerInvariant();
 
@@ -37,7 +34,7 @@ public sealed class AuthService(
         await repository.AdicionarAsync(usuario, ct);
         
         if (role == RoleUsuario.Cliente)
-            await clienteRepository.AdicionarAsync(new Cliente(nome.Trim(), documento!, usuario.Id), ct);
+            await clienteRepository.AdicionarAsync(new Cliente(nome.Trim(), documento!, usuario.Id, telefone), ct);
         
         return usuario.Id;
     }

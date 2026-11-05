@@ -47,6 +47,10 @@ namespace Oficina.Infra.Data.Postgres.Migrations
                         .HasMaxLength(160)
                         .HasColumnType("character varying(160)");
 
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uuid");
 

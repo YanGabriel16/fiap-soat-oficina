@@ -1,3 +1,4 @@
+using Hangfire;
 using Oficina.Api.Configurations;
 using Oficina.Api.Middleware;
 using Oficina.Application.Configurations;
@@ -14,6 +15,8 @@ public sealed class Startup(IConfiguration configuration)
         services.AddAuthConfiguration();
         services.AddControllersConfiguration();
         services.AddDatabaseConfiguration(Configuration);
+        services.AddHangfireConfiguration(Configuration);
+        services.AddNotificationConfiguration(Configuration);
         services.AddServiceConfiguration();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerConfiguration();
@@ -49,6 +52,10 @@ public sealed class Startup(IConfiguration configuration)
         app.UseCors("Default"); 
         app.UseAuthentication(); 
         app.UseAuthorization();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapHangfireDashboard();
+        });
     }
 }

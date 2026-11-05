@@ -41,7 +41,8 @@ Oficina.Api
 Ponto de entrada e composição da aplicação. Contém:
 
 - `Program.cs` e `Startup.cs`;
-- configurações de autenticação, CORS, banco e Swagger;
+- configurações de autenticação, CORS, banco, Swagger e notificações;
+- processamento de notificações em background com Hangfire e SMTP;
 - registro de controllers, services e repositories;
 - middleware de exceções;
 - execução automática das migrations no início da aplicação.

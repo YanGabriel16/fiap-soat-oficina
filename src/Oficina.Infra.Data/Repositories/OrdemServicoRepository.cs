@@ -20,6 +20,8 @@ public sealed class OrdemServicoRepository(OficinaDbContext db) : BaseRepository
                     .ThenInclude(x => x!.Itens)
                 .Include(x => x.Itens)
                     .ThenInclude(x => x.ItemCatalogo)
+                .Include(x => x.Cliente)
+                    .ThenInclude(x => x.Usuario)
             where ordem.Id == id
             select ordem).SingleOrDefaultAsync(ct);
 

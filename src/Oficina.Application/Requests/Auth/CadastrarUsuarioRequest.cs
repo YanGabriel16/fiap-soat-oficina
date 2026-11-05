@@ -10,6 +10,9 @@ public sealed record CadastrarUsuarioRequest
     [Required, EmailAddress, MaxLength(320)]
     public required string Email { get; init; }
 
+    [Phone, MaxLength(24)]
+    public string? Telefone { get; init; }
+
     [Required, MinLength(8), MaxLength(128)]
     public required string Senha { get; init; }
 
